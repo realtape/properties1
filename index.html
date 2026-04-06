@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copper GI - Gestión Inmobiliaria | Propiedades en Copiapó</title>
+<style>
+/* ═══════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --copper:#b5451b;
+  --copper-light:#c87941;
+  --copper-dark:#8b3214;
+  --dark:#1a1a2e;
+  --gray:#f5f5f5;
+  --text:#2d2d2d;
+  --muted:#666;
+  --border:#e0e0e0;
+  --white:#ffffff;
+  --green:#1a6b3c;
+  --blue:#006aff;
+  --shadow:0 2px 12px rgba(0,0,0,.1);
+  --radius:8px;
+}
+body{font-family:'Segoe UI',Arial,sans-serif;color:var(--text);background:#fff;min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:inherit}
+input,select,textarea{font-family:inherit}
+.hidden{display:none!important}
+
+/* ═══════════════════════════════════════════════
+   PAGES
+═══════════════════════════════════════════════ */
+.page{display:none}
+.page.active{display:block}
+
+/* ═══════════════════════════════════════════════
+   TOP INFO BAR
+═══════════════════════════════════════════════ */
+.info-bar{
+  background:var(--copper);
+  color:#fff;
+  font-size:12px;
+  padding:6px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.info-bar span{display:flex;align-items:center;gap:5px}
+
+/* ═══════════════════════════════════════════════
+   HEADER / NAV
+═══════════════════════════════════════════════ */
+header{
+  background:#3a3a3a;
+  padding:0 40px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  height:72px;
+  position:sticky;top:32px;z-index:100;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.logo-icon{
+  width:50px;height:50px;
+  background:linear-gradient(135deg,var(--copper-dark),var(--copper-light));
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;font-weight:900;color:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+.logo-text{color:#fff}
+.logo-text .brand{font-size:22px;font-weight:700;letter-spacing:1px}
+.logo-text .tagline{font-size:10px;color:rgba(255,255,255,.7);letter-spacing:2px;text-transform:uppercase}
+nav{display:flex;align-items:center;gap:4px}
+.nav-link{
+  color:rgba(255,255,255,.85);
+  padding:8px 14px;
+  border-radius:4px;
+  font-size:13px;
+  font-weight:500;
+  transition:all .2s;
+  cursor:pointer;
+}
+.nav-link:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-link.active{color:#fff}
+.nav-btn{
+  background:var(--copper);
+  color:#fff;
+  padding:8px 18px;
+  border-radius:4px;
+  font-size:13px;
+  font-weight:600;
+  border:none;
+  margin-left:8px;
+  transition:background .2s;
+}
+.nav-btn:hover{background:var(--copper-dark)}
+.nav-social{display:flex;gap:8px;margin-left:12px}
+.nav-social a{
+  color:rgba(255,255,255,.7);
+  width:30px;height:30px;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;
+  transition:all .2s;
+}
+.nav-social a:hover{color:#fff;border-color:#fff;background:rgba(255,255,255,.1)}
+
+/* ═══════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════ */
+.hero{
+  position:relative;
+  height:580px;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,#1a0a05 0%,#4a1a08 40%,#2d2d2d 100%);
+  z-index:0;
+}
+.hero-bg::before{
+  content:'';position:absolute;inset:0;
+  background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 580"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%23b5451b" stop-opacity=".4"/><stop offset="1" stop-color="%231a1a2e" stop-opacity=".6"/></linearGradient></defs><rect width="1440" height="580" fill="url(%23g)"/><circle cx="200" cy="100" r="300" fill="%23c87941" opacity=".08"/><circle cx="1300" cy="400" r="250" fill="%23b5451b" opacity=".06"/></svg>') center/cover;
+}
+.hero-content{position:relative;z-index:1;text-align:center;max-width:780px;padding:20px}
+.hero-eyebrow{
+  color:var(--copper-light);
+  font-size:13px;font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:16px;
+}
+.hero-title{
+  color:#fff;
+  font-size:48px;font-weight:700;
+  line-height:1.15;
+  margin-bottom:12px;
+  text-shadow:0 2px 20px rgba(0,0,0,.4);
+}
+.hero-title span{color:var(--copper-light)}
+.hero-subtitle{
+  color:rgba(255,255,255,.8);
+  font-size:18px;
+  margin-bottom:36px;
+}
+
+/* Search Box – Zillow style */
+.search-box{
+  background:#fff;
+  border-radius:12px;
+  padding:6px 6px 6px 0;
+  display:flex;
+  align-items:center;
+  box-shadow:0 8px 32px rgba(0,0,0,.35);
+  max-width:720px;
+  margin:0 auto;
+}
+.search-tabs{display:flex;border-right:1px solid var(--border);margin-right:6px}
+.search-tab{
+  padding:10px 16px;
+  font-size:13px;font-weight:600;
+  color:var(--muted);
+  cursor:pointer;
+  border-radius:8px;
+  white-space:nowrap;
+  transition:all .2s;
+}
+.search-tab.active{background:var(--copper);color:#fff}
+.search-tab:hover:not(.active){background:#f0f0f0;color:var(--text)}
+.search-input-wrap{flex:1;display:flex;align-items:center;gap:8px;padding:0 12px}
+.search-input-wrap input{
+  flex:1;border:none;outline:none;
+  font-size:15px;color:var(--text);
+  placeholder-color:var(--muted);
+}
+.search-input-wrap input::placeholder{color:#aaa}
+.search-btn{
+  background:var(--copper);
+  color:#fff;
+  border:none;
+  padding:14px 28px;
+  border-radius:8px;
+  font-size:15px;font-weight:700;
+  transition:background .2s;
+  white-space:nowrap;
+}
+.search-btn:hover{background:var(--copper-dark)}
+.hero-stats{
+  display:flex;justify-content:center;gap:32px;
+  margin-top:28px;
+}
+.hero-stat{color:rgba(255,255,255,.85);text-align:center}
+.hero-stat .num{font-size:24px;font-weight:700;color:#fff}
+.hero-stat .lbl{font-size:12px;color:rgba(255,255,255,.65);margin-top:2px}
+
+/* ═══════════════════════════════════════════════
+   FILTER BAR
+═══════════════════════════════════════════════ */
+.filter-bar{
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  padding:14px 40px;
+  display:flex;align-items:center;gap:12px;
+  flex-wrap:wrap;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+}
+.filter-bar select,.filter-bar input{
+  padding:9px 14px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  font-size:13px;
+  color:var(--text);
+  background:#fff;
+  cursor:pointer;
+  transition:border-color .2s;
+}
+.filter-bar select:focus,.filter-bar input:focus{outline:none;border-color:var(--copper)}
+.filter-bar .filter-label{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}
+.btn-filter{
+  background:var(--copper);color:#fff;
+  border:none;padding:9px 20px;
+  border-radius:6px;font-size:13px;font-weight:600;
+  transition:background .2s;
+}
+.btn-filter:hover{background:var(--copper-dark)}
+.btn-clear{
+  background:#f0f0f0;color:var(--muted);
+  border:none;padding:9px 16px;
+  border-radius:6px;font-size:13px;font-weight:600;
+  transition:background .2s;
+}
+.btn-clear:hover{background:#e0e0e0;color:var(--text)}
+.result-count{margin-left:auto;font-size:13px;color:var(--muted);font-weight:600}
+
+/* ═══════════════════════════════════════════════
+   PROPERTIES SECTION
+═══════════════════════════════════════════════ */
+.properties-section{padding:32px 40px;background:#f8f8f8;min-height:400px}
+.section-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;
+}
+.section-title{font-size:24px;font-weight:700;color:var(--text)}
+.section-title span{color:var(--copper)}
+.view-all-link{color:var(--copper);font-weight:600;font-size:14px;cursor:pointer;transition:color .2s}
+.view-all-link:hover{color:var(--copper-dark)}
+
+/* Property Grid */
+.prop-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:20px;
+}
+.prop-card{
+  background:#fff;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+  transition:transform .2s,box-shadow .2s;
+  cursor:pointer;
+}
+.prop-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,.14)}
+.prop-img{
+  position:relative;
+  height:200px;
+  overflow:hidden;
+  background:linear-gradient(135deg,#ddd,#eee);
+}
+.prop-img img{width:100%;height:100%;object-fit:cover}
+.prop-img-placeholder{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:48px;
+  background:linear-gradient(135deg,#e8d5c4,#f5e8dc);
+  color:var(--copper-light);
+}
+.prop-badge{
+  position:absolute;top:12px;left:12px;
+  padding:4px 10px;border-radius:20px;
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+}
+.badge-venta{background:var(--copper);color:#fff}
+.badge-arriendo{background:var(--green);color:#fff}
+.badge-venta-arriendo{background:#7c5cbf;color:#fff}
+.prop-fav{
+  position:absolute;top:12px;right:12px;
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,.9);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;cursor:pointer;
+  transition:all .2s;
+}
+.prop-fav:hover{background:#fff;transform:scale(1.1)}
+.prop-code{
+  position:absolute;bottom:12px;left:12px;
+  background:rgba(0,0,0,.65);color:#fff;
+  padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;
+}
+.prop-body{padding:16px}
+.prop-price{
+  font-size:20px;font-weight:700;color:var(--copper);
+  margin-bottom:6px;
+}
+.prop-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px}
+.prop-address{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px;margin-bottom:12px}
+.prop-features{
+  display:flex;gap:12px;flex-wrap:wrap;
+  padding-top:12px;border-top:1px solid var(--border);
+}
+.prop-feat{
+  display:flex;align-items:center;gap:5px;
+  font-size:12px;color:var(--muted);
+}
+.prop-feat strong{color:var(--text);font-weight:700}
+.prop-actions{
+  display:flex;gap:8px;margin-top:12px;
+}
+.btn-detail{
+  flex:1;padding:9px;
+  border:2px solid var(--copper);color:var(--copper);
+  border-radius:6px;font-size:12px;font-weight:700;
+  background:transparent;transition:all .2s;text-align:center;
+}
+.btn-detail:hover{background:var(--copper);color:#fff}
+.btn-contact{
+  flex:1;padding:9px;
+  background:var(--copper);color:#fff;
+  border:2px solid var(--copper);
+  border-radius:6px;font-size:12px;font-weight:700;
+  transition:background .2s;text-align:center;
+}
+.btn-contact:hover{background:var(--copper-dark)}
+
+/* Empty state */
+.empty-state{
+  text-align:center;padding:80px 20px;
+  grid-column:1/-1;
+}
+.empty-state .icon{font-size:64px;margin-bottom:16px;opacity:.5}
+.empty-state h3{font-size:20px;color:var(--muted);margin-bottom:8px}
+.empty-state p{font-size:14px;color:#aaa}
+
+/* ═══════════════════════════════════════════════
+   WHY US / SERVICES SECTION
+═══════════════════════════════════════════════ */
+.why-section{padding:60px 40px;background:#fff}
+.why-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:32px;margin-top:40px;
+}
+.why-card{text-align:center;padding:24px}
+.why-icon{
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,#fde8dc,#f5c4a8);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin:0 auto 16px;
+}
+.why-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.why-desc{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* CTA Banner */
+.cta-banner{
+  background:linear-gradient(135deg,var(--copper-dark),var(--copper));
+  padding:60px 40px;text-align:center;
+}
+.cta-banner h2{color:#fff;font-size:32px;font-weight:700;margin-bottom:12px}
+.cta-banner p{color:rgba(255,255,255,.85);font-size:16px;margin-bottom:28px}
+.btn-cta{
+  background:#fff;color:var(--copper);
+  padding:14px 36px;border-radius:8px;
+  font-size:15px;font-weight:700;
+  border:none;cursor:pointer;
+  transition:all .2s;
+  display:inline-block;
+}
+.btn-cta:hover{background:var(--gray);transform:translateY(-2px)}
+
+/* ═══════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════ */
+footer{
+  background:#1a1a1a;color:#ccc;
+  padding:48px 40px 24px;
+}
+.footer-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:40px;margin-bottom:40px;
+}
+.footer-brand .brand-name{color:#fff;font-size:22px;font-weight:700;margin-bottom:8px}
+.footer-brand p{font-size:13px;line-height:1.7;margin-bottom:16px}
+.footer-social{display:flex;gap:10px}
+.footer-social a{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:#ccc;transition:all .2s;
+}
+.footer-social a:hover{background:var(--copper);color:#fff}
+.footer-col h4{color:#fff;font-size:14px;font-weight:700;margin-bottom:16px}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:10px}
+.footer-col ul li a{font-size:13px;color:#999;transition:color .2s;cursor:pointer}
+.footer-col ul li a:hover{color:var(--copper-light)}
+.footer-bottom{
+  border-top:1px solid rgba(255,255,255,.1);
+  padding-top:24px;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:12px;
+  font-size:12px;color:#666;
+}
+
+/* ═══════════════════════════════════════════════
+   PROPERTY DETAIL PAGE
+═══════════════════════════════════════════════ */
+.detail-hero{
+  background:var(--dark);
+  height:400px;overflow:hidden;
+  position:relative;
+}
+.detail-hero img{width:100%;height:100%;object-fit:cover;opacity:.85}
+.detail-hero-placeholder{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:80px;
+  background:linear-gradient(135deg,#e8d5c4,#d4b896);
+  color:var(--copper-light);
+}
+.detail-back{
+  position:absolute;top:20px;left:20px;
+  background:rgba(0,0,0,.6);color:#fff;
+  padding:8px 16px;border-radius:6px;
+  font-size:13px;font-weight:600;cursor:pointer;
+  transition:background .2s;
+}
+.detail-back:hover{background:rgba(0,0,0,.8)}
+.detail-body{max-width:1100px;margin:0 auto;padding:32px 20px;display:grid;grid-template-columns:1fr 340px;gap:32px}
+.detail-main{}
+.detail-price{font-size:32px;font-weight:700;color:var(--copper);margin-bottom:8px}
+.detail-title{font-size:22px;font-weight:700;margin-bottom:6px}
+.detail-address{font-size:14px;color:var(--muted);margin-bottom:20px;display:flex;align-items:center;gap:5px}
+.detail-features{
+  display:flex;gap:20px;flex-wrap:wrap;
+  padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  margin-bottom:24px;
+}
+.detail-feat{text-align:center}
+.detail-feat .val{font-size:20px;font-weight:700;color:var(--text)}
+.detail-feat .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.detail-desc{font-size:14px;line-height:1.8;color:var(--muted);margin-bottom:24px}
+.detail-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.detail-tag{
+  background:#f0f0f0;color:var(--muted);
+  padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;
+}
+/* Contact Card */
+.contact-card{
+  background:#fff;border-radius:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,.1);
+  padding:24px;position:sticky;top:120px;
+}
+.contact-card h3{font-size:16px;font-weight:700;margin-bottom:4px}
+.contact-card .agent{font-size:13px;color:var(--muted);margin-bottom:20px}
+.contact-form input,.contact-form textarea,.contact-form select{
+  width:100%;padding:10px 12px;
+  border:1px solid var(--border);border-radius:6px;
+  font-size:13px;margin-bottom:10px;
+  transition:border-color .2s;
+}
+.contact-form input:focus,.contact-form textarea:focus{outline:none;border-color:var(--copper)}
+.contact-form textarea{height:80px;resize:vertical}
+.btn-send{
+  width:100%;padding:12px;
+  background:var(--copper);color:#fff;
+  border:none;border-radius:6px;
+  font-size:14px;font-weight:700;
+  transition:background .2s;
+}
+.btn-send:hover{background:var(--copper-dark)}
+.contact-phones{margin-top:16px;text-align:center}
+.contact-phones a{color:var(--copper);font-weight:600;font-size:14px}
+
+/* ═══════════════════════════════════════════════
+   ADMIN PANEL
+═══════════════════════════════════════════════ */
+.admin-login{
+  min-height:100vh;
+  background:linear-gradient(135deg,var(--copper-dark),var(--dark));
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+.login-card{
+  background:#fff;border-radius:12px;
+  padding:40px;width:100%;max-width:400px;
+  box-shadow:0 16px 48px rgba(0,0,0,.3);
+}
+.login-logo{text-align:center;margin-bottom:32px}
+.login-logo .icon{font-size:48px;margin-bottom:8px}
+.login-logo h2{font-size:22px;font-weight:700;color:var(--text)}
+.login-logo p{font-size:13px;color:var(--muted);margin-top:4px}
+.login-form label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.login-form input{
+  width:100%;padding:11px 14px;
+  border:1px solid var(--border);border-radius:6px;
+  font-size:14px;margin-bottom:16px;
+  transition:border-color .2s;
+}
+.login-form input:focus{outline:none;border-color:var(--copper)}
+.btn-login{
+  width:100%;padding:13px;
+  background:var(--copper);color:#fff;
+  border:none;border-radius:6px;
+  font-size:15px;font-weight:700;
+  transition:background .2s;
+}
+.btn-login:hover{background:var(--copper-dark)}
+.login-error{
+  background:#fce4ec;color:#c62828;
+  padding:10px 14px;border-radius:6px;
+  font-size:13px;margin-bottom:16px;
+  display:none;
+}
+
+/* Admin Layout */
+.admin-layout{
+  display:flex;min-height:100vh;
+  background:#f4f6f8;
+}
+.admin-sidebar{
+  width:240px;flex-shrink:0;
+  background:#1e2430;
+  display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.sidebar-brand{
+  padding:20px;border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;gap:10px;
+}
+.sidebar-brand .icon{
+  width:38px;height:38px;border-radius:8px;
+  background:var(--copper);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:900;color:#fff;
+}
+.sidebar-brand .name{color:#fff;font-weight:700;font-size:14px}
+.sidebar-brand .role{color:rgba(255,255,255,.5);font-size:11px}
+.sidebar-nav{padding:16px 0;flex:1}
+.sidebar-nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 20px;
+  color:rgba(255,255,255,.6);
+  font-size:13px;font-weight:500;
+  cursor:pointer;
+  transition:all .2s;
+  border-left:3px solid transparent;
+}
+.sidebar-nav-item:hover{color:#fff;background:rgba(255,255,255,.05)}
+.sidebar-nav-item.active{color:#fff;background:rgba(181,69,27,.2);border-left-color:var(--copper)}
+.sidebar-nav-item .nav-icon{font-size:16px;width:20px;text-align:center}
+.sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.08)}
+.sidebar-logout{
+  display:flex;align-items:center;gap:10px;
+  color:rgba(255,255,255,.5);font-size:13px;
+  cursor:pointer;transition:color .2s;
+}
+.sidebar-logout:hover{color:#e53935}
+
+.admin-content{flex:1;padding:28px;overflow-y:auto}
+.admin-topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;
+}
+.admin-page-title{font-size:22px;font-weight:700;color:var(--text)}
+.admin-page-title span{color:var(--muted);font-weight:400;font-size:16px;margin-left:8px}
+
+/* Admin KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px}
+.kpi-card{
+  background:#fff;border-radius:10px;padding:20px;
+  box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:14px;
+}
+.kpi-icon{
+  width:48px;height:48px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+}
+.kpi-icon.orange{background:#fde8dc}
+.kpi-icon.green{background:#e8f5e9}
+.kpi-icon.blue{background:#e3f2fd}
+.kpi-icon.purple{background:#f3e5f5}
+.kpi-val{font-size:26px;font-weight:700;color:var(--text)}
+.kpi-label{font-size:12px;color:var(--muted)}
+
+/* Admin Table */
+.admin-card{background:#fff;border-radius:10px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:24px}
+.admin-card-header{
+  padding:16px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+.admin-card-title{font-size:15px;font-weight:700}
+.btn-add{
+  background:var(--copper);color:#fff;
+  border:none;padding:8px 18px;border-radius:6px;
+  font-size:13px;font-weight:600;transition:background .2s;
+}
+.btn-add:hover{background:var(--copper-dark)}
+.admin-table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{
+  background:#f8f8f8;color:var(--muted);
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  padding:12px 16px;text-align:left;
+  border-bottom:2px solid var(--border);white-space:nowrap;
+}
+td{padding:12px 16px;border-bottom:1px solid #f0f0f0;font-size:13px;color:var(--text)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafbfc}
+.tbl-img{width:48px;height:36px;object-fit:cover;border-radius:4px}
+.tbl-img-placeholder{width:48px;height:36px;background:linear-gradient(135deg,#e8d5c4,#f5e8dc);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--copper-light)}
+.status-pill{
+  padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;text-transform:uppercase;
+}
+.pill-venta{background:#fde8dc;color:var(--copper)}
+.pill-arriendo{background:#e8f5e9;color:var(--green)}
+.pill-vendida{background:#fce4ec;color:#c62828}
+.pill-activa{background:#e8f5e9;color:var(--green)}
+.pill-inactiva{background:#f0f0f0;color:var(--muted)}
+.tbl-actions{display:flex;gap:6px}
+.btn-edit,.btn-delete,.btn-view{
+  padding:5px 12px;border-radius:4px;font-size:11px;font-weight:600;border:none;cursor:pointer;transition:all .2s;
+}
+.btn-edit{background:#e3f2fd;color:#1565c0}
+.btn-edit:hover{background:#1565c0;color:#fff}
+.btn-delete{background:#fce4ec;color:#c62828}
+.btn-delete:hover{background:#c62828;color:#fff}
+.btn-view{background:#e8f5e9;color:var(--green)}
+.btn-view:hover{background:var(--green);color:#fff}
+
+/* Admin Form */
+.admin-section{display:none}
+.admin-section.active{display:block}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.form-group{margin-bottom:0}
+.form-group.full{grid-column:1/-1}
+.form-group label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:10px 12px;
+  border:1px solid var(--border);border-radius:6px;
+  font-size:13px;color:var(--text);
+  transition:border-color .2s;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--copper)}
+.form-group textarea{height:100px;resize:vertical}
+.form-actions{display:flex;gap:12px;margin-top:20px;padding-top:20px;border-top:1px solid var(--border)}
+.btn-save{background:var(--copper);color:#fff;border:none;padding:11px 28px;border-radius:6px;font-size:14px;font-weight:600;transition:background .2s}
+.btn-save:hover{background:var(--copper-dark)}
+.btn-cancel{background:#f0f0f0;color:var(--muted);border:none;padding:11px 20px;border-radius:6px;font-size:14px;font-weight:600;transition:all .2s}
+.btn-cancel:hover{background:#e0e0e0;color:var(--text)}
+
+/* Image upload */
+.img-upload-area{
+  border:2px dashed var(--border);border-radius:8px;
+  padding:32px;text-align:center;cursor:pointer;
+  transition:all .2s;
+  background:#fafafa;
+}
+.img-upload-area:hover{border-color:var(--copper);background:#fef5f0}
+.img-upload-area .icon{font-size:36px;margin-bottom:8px;color:var(--copper-light)}
+.img-upload-area p{font-size:13px;color:var(--muted)}
+.img-preview-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.img-thumb{
+  width:80px;height:60px;object-fit:cover;
+  border-radius:6px;border:2px solid var(--border);
+  position:relative;
+}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:#1e2430;color:#fff;
+  padding:13px 20px;border-radius:8px;
+  box-shadow:0 4px 20px rgba(0,0,0,.3);
+  font-size:13px;z-index:9999;
+  transform:translateY(80px);opacity:0;
+  transition:all .35s ease;
+  max-width:300px;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-left:4px solid #43a047}
+.toast.error{border-left:4px solid #e53935}
+.toast.info{border-left:4px solid var(--copper)}
+
+/* Modal */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.5);z-index:500;
+  align-items:center;justify-content:center;
+  padding:20px;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:#fff;border-radius:12px;
+  width:100%;max-width:640px;max-height:90vh;overflow-y:auto;
+  box-shadow:0 16px 48px rgba(0,0,0,.25);
+}
+.modal-header{
+  background:var(--dark);color:#fff;
+  padding:18px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:1;
+}
+.modal-title{font-weight:700;font-size:16px}
+.modal-close{cursor:pointer;font-size:20px;opacity:.7;line-height:1}
+.modal-close:hover{opacity:1}
+.modal-body{padding:24px}
+
+/* Pagination */
+.pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:24px}
+.page-btn{
+  width:36px;height:36px;border-radius:6px;
+  border:1px solid var(--border);background:#fff;
+  font-size:13px;font-weight:600;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;
+}
+.page-btn:hover{border-color:var(--copper);color:var(--copper)}
+.page-btn.active{background:var(--copper);color:#fff;border-color:var(--copper)}
+
+/* Search highlight */
+mark{background:#fde8dc;color:var(--copper-dark);border-radius:2px;padding:0 2px}
+
+/* Responsive */
+@media(max-width:768px){
+  header{padding:0 16px}
+  nav .nav-link{display:none}
+  .hero-title{font-size:28px}
+  .search-box{flex-direction:column;padding:10px}
+  .search-tabs{border-right:none;border-bottom:1px solid var(--border);margin-right:0;margin-bottom:8px}
+  .properties-section,.why-section{padding:24px 16px}
+  .filter-bar{padding:12px 16px}
+  .detail-body{grid-template-columns:1fr}
+  .admin-sidebar{display:none}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .form-grid,.form-grid-3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ PUBLIC SITE ═══════════════════════ -->
+<div id="page-home" class="page active">
+
+  <!-- Info Bar -->
+  <div class="info-bar">
+    <span>📍 Los Carrera N°4723, Local N°40, segundo piso, Copiapó</span>
+    <span>✉️ contacto@coppergi.cl</span>
+    <span>📞 +56 9 85230195</span>
+    <span>UF $ <span id="uf-display">39.841,72</span> &nbsp;|&nbsp; USD $ 922,17</span>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="logo" onclick="showPage('page-home')">
+      <div class="logo-icon">C</div>
+      <div class="logo-text">
+        <div class="brand">Copper GI</div>
+        <div class="tagline">Gestión Inmobiliaria</div>
+      </div>
+    </div>
+    <nav>
+      <a class="nav-link active" onclick="showPage('page-home')">Inicio</a>
+      <a class="nav-link" onclick="scrollToProperties()">Propiedades</a>
+      <a class="nav-link" onclick="scrollToWhy()">Quiénes Somos</a>
+      <a class="nav-link" onclick="scrollToWhy()">Servicios</a>
+      <a class="nav-link">Blog</a>
+      <a class="nav-link" onclick="scrollToContact()">Contacto</a>
+      <div class="nav-social">
+        <a href="https://facebook.com" target="_blank">f</a>
+        <a href="https://instagram.com" target="_blank">ig</a>
+      </div>
+      <button class="nav-btn" onclick="showPage('page-admin-login')">Admin</button>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">🏠 Tu próximo hogar te espera en Copiapó</div>
+      <h1 class="hero-title">Encuentra tu<br><span>Propiedad Ideal</span></h1>
+      <p class="hero-subtitle">Casas, departamentos, oficinas y locales en Copiapó y la Región de Atacama</p>
+
+      <!-- Search Box -->
+      <div class="search-box">
+        <div class="search-tabs" id="search-tabs">
+          <div class="search-tab active" onclick="setSearchTab(this,'Comprar')">Comprar</div>
+          <div class="search-tab" onclick="setSearchTab(this,'Arrendar')">Arrendar</div>
+          <div class="search-tab" onclick="setSearchTab(this,'Todos')">Todos</div>
+        </div>
+        <div class="search-input-wrap">
+          <span>🔍</span>
+          <input type="text" id="hero-search" placeholder="Buscar por dirección, sector, tipo...">
+        </div>
+        <button class="search-btn" onclick="doHeroSearch()">Buscar</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="num" id="stat-total">0</div>
+          <div class="lbl">Propiedades</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num" id="stat-venta">0</div>
+          <div class="lbl">En Venta</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num" id="stat-arriendo">0</div>
+          <div class="lbl">En Arriendo</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">10+</div>
+          <div class="lbl">Años de experiencia</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar" id="filter-bar">
+    <span class="filter-label">Filtrar:</span>
+    <select id="f-operacion">
+      <option value="">Operación</option>
+      <option value="venta">Venta</option>
+      <option value="arriendo">Arriendo</option>
+    </select>
+    <select id="f-tipo">
+      <option value="">Tipo</option>
+      <option value="Casa">Casa</option>
+      <option value="Departamento">Departamento</option>
+      <option value="Oficina">Oficina</option>
+      <option value="Local Comercial">Local Comercial</option>
+      <option value="Terreno">Terreno</option>
+    </select>
+    <select id="f-region">
+      <option value="">Sector / Barrio</option>
+      <option value="Centro">Centro</option>
+      <option value="Balmaceda">Balmaceda</option>
+      <option value="Los Cóndores">Los Cóndores</option>
+      <option value="Villa Chuquicamata">Villa Chuquicamata</option>
+      <option value="Caldera">Caldera</option>
+    </select>
+    <select id="f-precio">
+      <option value="">Precio máx.</option>
+      <option value="50">Hasta UF 50/mes</option>
+      <option value="100">Hasta UF 100/mes</option>
+      <option value="1000">Hasta UF 1.000</option>
+      <option value="3000">Hasta UF 3.000</option>
+      <option value="5000">Hasta UF 5.000</option>
+      <option value="10000">Hasta UF 10.000</option>
+    </select>
+    <button class="btn-filter" onclick="applyFilters()">🔍 Aplicar</button>
+    <button class="btn-clear" onclick="clearFilters()">✕ Limpiar</button>
+    <div class="result-count" id="result-count"></div>
+  </div>
+
+  <!-- Properties Section -->
+  <section class="properties-section" id="properties-section">
+    <div class="section-header">
+      <h2 class="section-title">Propiedades <span>Destacadas</span></h2>
+      <a class="view-all-link" onclick="showAllProperties()">Ver todas las propiedades →</a>
+    </div>
+    <div class="prop-grid" id="prop-grid">
+      <!-- Populated by JS -->
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </section>
+
+  <!-- Why Us -->
+  <section class="why-section" id="why-section">
+    <div style="text-align:center">
+      <div style="color:var(--copper);font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">¿Por qué elegirnos?</div>
+      <h2 style="font-size:32px;font-weight:700;margin-bottom:8px">Expertos en el Mercado de Atacama</h2>
+      <p style="color:var(--muted);font-size:16px">Con más de 10 años de experiencia en la región, somos tu socio de confianza</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon">🏆</div>
+        <div class="why-title">Experiencia Local</div>
+        <div class="why-desc">Conocemos cada rincón de Copiapó y la Región de Atacama. Tu hogar ideal está a un paso.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🔍</div>
+        <div class="why-title">Búsqueda Inteligente</div>
+        <div class="why-desc">Filtra y encuentra exactamente lo que buscas con nuestra plataforma moderna y fácil de usar.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🤝</div>
+        <div class="why-title">Asesoría Personalizada</div>
+        <div class="why-desc">Nuestro equipo te acompaña en cada paso del proceso de compra, venta o arriendo.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">📋</div>
+        <div class="why-title">Gestión Completa</div>
+        <div class="why-desc">Nos encargamos de todos los trámites legales y documentación para tu tranquilidad.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-banner" id="contact-section">
+    <h2>¿Quieres vender o arrendar tu propiedad?</h2>
+    <p>Contáctanos hoy y te ayudamos a encontrar el mejor negocio para tu inmueble</p>
+    <button class="btn-cta" onclick="openContactModal()">Contáctanos ahora</button>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="brand-name">Copper Gestión Inmobiliaria</div>
+        <p>Tu aliado de confianza en el mercado inmobiliario de Copiapó y la Región de Atacama. Más de 10 años conectando familias con sus hogares ideales.</p>
+        <div class="footer-social">
+          <a href="#">f</a>
+          <a href="#">ig</a>
+          <a href="#">in</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Propiedades</h4>
+        <ul>
+          <li><a onclick="applyFilterDirect('venta')">Casas en venta</a></li>
+          <li><a onclick="applyFilterDirect('arriendo')">Arriendos</a></li>
+          <li><a>Departamentos</a></li>
+          <li><a>Oficinas</a></li>
+          <li><a>Locales Comerciales</a></li>
+          <li><a>Terrenos</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Empresa</h4>
+        <ul>
+          <li><a onclick="scrollToWhy()">Quiénes Somos</a></li>
+          <li><a onclick="scrollToWhy()">Servicios</a></li>
+          <li><a>Blog Inmobiliario</a></li>
+          <li><a onclick="scrollToContact()">Contacto</a></li>
+          <li><a onclick="showPage('page-admin-login')">Portal Admin</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <ul>
+          <li><a>📍 Los Carrera N°4723, Local N°40, Copiapó</a></li>
+          <li><a>📞 +56 9 85230195</a></li>
+          <li><a>✉️ contacto@coppergi.cl</a></li>
+          <li><a>🕐 Lun–Vie: 9:00–18:00</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Copper Gestión Inmobiliaria. Todos los derechos reservados.</span>
+      <span>Diseño web moderno — Copiapó, Chile</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════ PROPERTY DETAIL ═══════════════════════ -->
+<div id="page-detail" class="page">
+  <div class="info-bar">
+    <span>📍 Los Carrera N°4723, Local N°40, segundo piso, Copiapó</span>
+    <span>📞 +56 9 85230195</span>
+  </div>
+  <header>
+    <div class="logo" onclick="showPage('page-home')">
+      <div class="logo-icon">C</div>
+      <div class="logo-text">
+        <div class="brand">Copper GI</div>
+        <div class="tagline">Gestión Inmobiliaria</div>
+      </div>
+    </div>
+    <nav>
+      <a class="nav-link" onclick="showPage('page-home')">← Volver al Inicio</a>
+      <a class="nav-link" onclick="scrollToProperties()">Propiedades</a>
+    </nav>
+  </header>
+  <div id="detail-content"></div>
+</div>
+
+<!-- ═══════════════════════ ADMIN LOGIN ═══════════════════════ -->
+<div id="page-admin-login" class="page">
+  <div class="admin-login">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="icon">🏠</div>
+        <h2>Copper GI Admin</h2>
+        <p>Panel de Administración</p>
+      </div>
+      <div class="login-error" id="login-error">Usuario o contraseña incorrectos</div>
+      <div class="login-form">
+        <label>Usuario</label>
+        <input type="text" id="login-user" value="" placeholder="admin">
+        <label>Contraseña</label>
+        <input type="password" id="login-pass" value="" placeholder="••••••">
+        <button class="btn-login" onclick="doLogin()">Ingresar al Panel</button>
+      </div>
+      <div style="text-align:center;margin-top:16px">
+        <a onclick="showPage('page-home')" style="font-size:13px;color:var(--muted);cursor:pointer">← Volver al sitio</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ ADMIN PANEL ═══════════════════════ -->
+<div id="page-admin" class="page">
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <div class="icon">C</div>
+        <div>
+          <div class="name">Copper GI</div>
+          <div class="role">Administrador</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-item active" onclick="showAdminSection('dashboard',this)">
+          <span class="nav-icon">📊</span> Dashboard
+        </div>
+        <div class="sidebar-nav-item" onclick="showAdminSection('propiedades',this)">
+          <span class="nav-icon">🏠</span> Propiedades
+        </div>
+        <div class="sidebar-nav-item" onclick="showAdminSection('nueva-prop',this)">
+          <span class="nav-icon">➕</span> Nueva Propiedad
+        </div>
+        <div class="sidebar-nav-item" onclick="showAdminSection('contactos',this)">
+          <span class="nav-icon">📬</span> Consultas
+        </div>
+        <div class="sidebar-nav-item" onclick="showAdminSection('configuracion',this)">
+          <span class="nav-icon">⚙️</span> Configuración
+        </div>
+        <div class="sidebar-nav-item" onclick="showPage('page-home')">
+          <span class="nav-icon">🌐</span> Ver Sitio Web
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-logout" onclick="doLogout()">
+          <span>🚪</span> Cerrar Sesión
+        </div>
+      </div>
+    </aside>
+
+    <!-- Content -->
+    <div class="admin-content">
+
+      <!-- DASHBOARD -->
+      <div id="admin-dashboard" class="admin-section active">
+        <div class="admin-topbar">
+          <div class="admin-page-title">Dashboard <span>General</span></div>
+          <button class="btn-add" onclick="showAdminSection('nueva-prop',document.querySelector('[onclick*=nueva-prop]'))">+ Nueva Propiedad</button>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon orange">🏠</div>
+            <div><div class="kpi-val" id="kpi-total">0</div><div class="kpi-label">Total Propiedades</div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon orange">🏷️</div>
+            <div><div class="kpi-val" id="kpi-venta">0</div><div class="kpi-label">En Venta</div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon green">🔑</div>
+            <div><div class="kpi-val" id="kpi-arriendo">0</div><div class="kpi-label">En Arriendo</div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon blue">📬</div>
+            <div><div class="kpi-val" id="kpi-consultas">0</div><div class="kpi-label">Consultas</div></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon green">✅</div>
+            <div><div class="kpi-val" id="kpi-activas">0</div><div class="kpi-label">Activas / Visibles</div></div>
+          </div>
+        </div>
+
+        <!-- Recent properties table -->
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <span class="admin-card-title">Propiedades Recientes</span>
+            <button class="btn-add" onclick="showAdminSection('propiedades',document.querySelector('[onclick*=propiedades]'))">Ver todas</button>
+          </div>
+          <div class="admin-table-wrap">
+            <table>
+              <thead><tr><th>Img</th><th>Código</th><th>Título</th><th>Operación</th><th>Precio</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody id="dash-recent-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Contacts -->
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <span class="admin-card-title">Últimas Consultas</span>
+          </div>
+          <div class="admin-table-wrap">
+            <table>
+              <thead><tr><th>Fecha</th><th>Nombre</th><th>Email</th><th>Teléfono</th><th>Propiedad</th><th>Mensaje</th></tr></thead>
+              <tbody id="dash-contacts-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROPIEDADES LIST -->
+      <div id="admin-propiedades" class="admin-section">
+        <div class="admin-topbar">
+          <div class="admin-page-title">Propiedades <span id="admin-prop-count"></span></div>
+          <button class="btn-add" onclick="showAdminSection('nueva-prop',document.querySelector('[onclick*=nueva-prop]'))">+ Nueva Propiedad</button>
+        </div>
+        <div class="admin-card" style="padding:14px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:center">
+          <input type="text" id="admin-search" placeholder="🔍 Buscar propiedades..." style="padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;width:280px" oninput="renderAdminTable()">
+          <select id="admin-filter-op" style="padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px" onchange="renderAdminTable()">
+            <option value="">Todas las operaciones</option>
+            <option value="venta">Venta</option>
+            <option value="arriendo">Arriendo</option>
+          </select>
+          <select id="admin-filter-status" style="padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px" onchange="renderAdminTable()">
+            <option value="">Todos los estados</option>
+            <option value="activa">Activa</option>
+            <option value="inactiva">Inactiva</option>
+          </select>
+        </div>
+        <div class="admin-card">
+          <div class="admin-table-wrap">
+            <table>
+              <thead><tr><th>Img</th><th>Código</th><th>Título</th><th>Tipo</th><th>Operación</th><th>Precio</th><th>Dorms.</th><th>M²</th><th>Sector</th><th>Visible</th><th>Acciones</th></tr></thead>
+              <tbody id="admin-prop-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- NUEVA / EDITAR PROPIEDAD -->
+      <div id="admin-nueva-prop" class="admin-section">
+        <div class="admin-topbar">
+          <div class="admin-page-title" id="form-page-title">Nueva Propiedad</div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <span class="admin-card-title">Información de la Propiedad</span>
+          </div>
+          <div style="padding:24px">
+            <input type="hidden" id="prop-id">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Título *</label>
+                <input type="text" id="prop-titulo" placeholder="Casa en Copiapó Centro">
+              </div>
+              <div class="form-group">
+                <label>Código</label>
+                <input type="text" id="prop-codigo" placeholder="Ej: COD-001 (auto si vacío)">
+              </div>
+              <div class="form-group">
+                <label>Tipo de Propiedad *</label>
+                <select id="prop-tipo">
+                  <option value="">Seleccionar...</option>
+                  <option>Casa</option>
+                  <option>Departamento</option>
+                  <option>Oficina</option>
+                  <option>Local Comercial</option>
+                  <option>Terreno</option>
+                  <option>Bodega</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Operación *</label>
+                <select id="prop-operacion">
+                  <option value="">Seleccionar...</option>
+                  <option value="venta">Venta</option>
+                  <option value="arriendo">Arriendo</option>
+                  <option value="venta-arriendo">Venta y Arriendo</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Precio *</label>
+                <input type="text" id="prop-precio" placeholder="Ej: UF 5.000 o $ 150.000.000">
+              </div>
+              <div class="form-group">
+                <label>Dirección *</label>
+                <input type="text" id="prop-direccion" placeholder="Av. Los Carrera 1234">
+              </div>
+              <div class="form-group">
+                <label>Sector / Barrio</label>
+                <input type="text" id="prop-sector" placeholder="Centro, Balmaceda, Caldera...">
+              </div>
+              <div class="form-group">
+                <label>Ciudad</label>
+                <input type="text" id="prop-ciudad" value="Copiapó">
+              </div>
+            </div>
+            <div class="form-grid-3" style="margin-top:16px">
+              <div class="form-group">
+                <label>Dormitorios</label>
+                <input type="number" id="prop-dorms" placeholder="0" min="0">
+              </div>
+              <div class="form-group">
+                <label>Baños</label>
+                <input type="number" id="prop-banos" placeholder="0" min="0">
+              </div>
+              <div class="form-group">
+                <label>Estacionamientos</label>
+                <input type="number" id="prop-estac" placeholder="0" min="0">
+              </div>
+              <div class="form-group">
+                <label>Sup. Útil (m²)</label>
+                <input type="number" id="prop-m2util" placeholder="0" min="0">
+              </div>
+              <div class="form-group">
+                <label>Sup. Total (m²)</label>
+                <input type="number" id="prop-m2total" placeholder="0" min="0">
+              </div>
+              <div class="form-group">
+                <label>Antigüedad</label>
+                <input type="text" id="prop-antiguedad" placeholder="Ej: 5 años, nueva">
+              </div>
+            </div>
+            <div style="margin-top:16px">
+              <div class="form-group full">
+                <label>Descripción</label>
+                <textarea id="prop-desc" placeholder="Describe la propiedad, características, entorno, etc."></textarea>
+              </div>
+            </div>
+            <div style="margin-top:16px">
+              <div class="form-group">
+                <label>Características adicionales (separadas por coma)</label>
+                <input type="text" id="prop-tags" placeholder="Piscina, Jardín, Bodega, Portón eléctrico...">
+              </div>
+            </div>
+
+            <!-- Image Upload -->
+            <div style="margin-top:20px">
+              <label style="display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Imágenes (URLs)</label>
+              <div style="display:flex;gap:8px;margin-bottom:8px">
+                <input type="text" id="img-url-input" placeholder="https://... (URL de imagen)" style="flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px">
+                <button onclick="addImageUrl()" style="background:var(--copper);color:#fff;border:none;padding:9px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer">+ Agregar</button>
+              </div>
+              <div id="img-preview-list" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
+              <input type="hidden" id="prop-imagenes">
+            </div>
+
+            <!-- Estado -->
+            <div style="margin-top:20px;display:flex;align-items:center;gap:12px">
+              <label style="font-size:13px;font-weight:600">Estado:</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px">
+                <input type="radio" name="prop-estado" value="activa" checked> Activa (visible en el sitio)
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px">
+                <input type="radio" name="prop-estado" value="inactiva"> Inactiva (oculta)
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px">
+                <input type="radio" name="prop-estado" value="destacada"> Destacada ⭐
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn-save" onclick="savePropiedad()">💾 Guardar Propiedad</button>
+              <button class="btn-cancel" onclick="cancelForm()">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONSULTAS -->
+      <div id="admin-contactos" class="admin-section">
+        <div class="admin-topbar">
+          <div class="admin-page-title">Consultas <span id="admin-contact-count"></span></div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-table-wrap">
+            <table>
+              <thead><tr><th>Fecha</th><th>Nombre</th><th>Email</th><th>Teléfono</th><th>Propiedad</th><th>Mensaje</th><th>Acciones</th></tr></thead>
+              <tbody id="admin-contacts-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONFIGURACIÓN -->
+      <div id="admin-configuracion" class="admin-section">
+        <div class="admin-topbar">
+          <div class="admin-page-title">Configuración</div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header"><span class="admin-card-title">Datos de la Empresa</span></div>
+          <div style="padding:24px">
+            <div class="form-grid">
+              <div class="form-group"><label>Nombre empresa</label><input type="text" value="Copper Gestión Inmobiliaria"></div>
+              <div class="form-group"><label>Email</label><input type="text" value="contacto@coppergi.cl"></div>
+              <div class="form-group"><label>Teléfono</label><input type="text" value="+56 9 85230195"></div>
+              <div class="form-group"><label>Dirección</label><input type="text" value="Los Carrera N°4723, Local N°40, Copiapó"></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-save" onclick="showToast('Configuración guardada ✓','success')">Guardar Cambios</button>
+            </div>
+          </div>
+        </div>
+        <div class="admin-card" style="margin-top:16px">
+          <div class="admin-card-header"><span class="admin-card-title">Datos de Acceso Admin</span></div>
+          <div style="padding:24px">
+            <div class="form-grid">
+              <div class="form-group"><label>Usuario admin</label><input type="text" value="admin"></div>
+              <div class="form-group"><label>Nueva contraseña</label><input type="password" placeholder="Dejar vacío para no cambiar"></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-save" onclick="showToast('Credenciales actualizadas ✓','success')">Actualizar Acceso</button>
+            </div>
+          </div>
+        </div>
+        <div class="admin-card" style="margin-top:16px">
+          <div class="admin-card-header"><span class="admin-card-title">Base de Datos</span></div>
+          <div style="padding:24px;display:flex;gap:12px">
+            <button class="btn-save" onclick="exportDB()">📤 Exportar Datos (JSON)</button>
+            <button class="btn-cancel" onclick="document.getElementById('import-file').click()">📥 Importar Datos</button>
+            <input type="file" id="import-file" accept=".json" style="display:none" onchange="importDB(this)">
+            <button style="background:#fce4ec;color:#c62828;border:none;padding:11px 20px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer" onclick="if(confirm('¿Borrar TODOS los datos? Esta acción no se puede deshacer.'))clearDB()">🗑️ Limpiar BD</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end admin-content -->
+  </div><!-- end admin-layout -->
+</div>
+
+<!-- Contact Modal -->
+<div class="modal-overlay" id="modal-contact">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <span class="modal-title">📬 Contáctanos</span>
+      <span class="modal-close" onclick="closeModal('modal-contact')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" style="margin-bottom:12px"><label>Nombre *</label><input type="text" id="cnt-nombre" placeholder="Tu nombre completo"></div>
+      <div class="form-group" style="margin-bottom:12px"><label>Email *</label><input type="email" id="cnt-email" placeholder="tu@email.com"></div>
+      <div class="form-group" style="margin-bottom:12px"><label>Teléfono</label><input type="tel" id="cnt-tel" placeholder="+56 9 ..."></div>
+      <div class="form-group" style="margin-bottom:12px"><label>Propiedad de interés</label><input type="text" id="cnt-prop" placeholder="Opcional"></div>
+      <div class="form-group" style="margin-bottom:16px"><label>Mensaje *</label><textarea id="cnt-msg" placeholder="¿En qué podemos ayudarte?"></textarea></div>
+      <button class="btn-send" onclick="sendContact()">Enviar Consulta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  DATABASE (localStorage)
+// ═══════════════════════════════════════════════
+const DB_KEY = 'coppergi_props';
+const CONTACTS_KEY = 'coppergi_contacts';
+
+function getProps(){
+  try{return JSON.parse(localStorage.getItem(DB_KEY)||'[]')}catch{return[]}
+}
+function saveProps(data){
+  localStorage.setItem(DB_KEY,JSON.stringify(data));
+}
+function getContacts(){
+  try{return JSON.parse(localStorage.getItem(CONTACTS_KEY)||'[]')}catch{return[]}
+}
+function saveContacts(data){
+  localStorage.setItem(CONTACTS_KEY,JSON.stringify(data));
+}
+
+// Seed demo data if empty
+function seedData(){
+  if(getProps().length>0) return;
+  const demo=[
+    {id:'p1',codigo:'COD-5261',titulo:'Casa en Caldera',tipo:'Casa',operacion:'venta',precio:'$ 185.000.000',direccion:'Costa del Sol, Calderilla',sector:'Caldera',ciudad:'Caldera',dorms:4,banos:2,estac:1,m2util:114,m2total:222,desc:'Hermosa casa en Costa del Sol con vista al mar. Amplio jardín, piscina y estacionamiento para 2 autos. Ideal para familia.',tags:'Piscina,Jardín,Terraza,Vista al mar',imagenes:'',estado:'activa',destacada:true,fecha:new Date().toISOString()},
+    {id:'p2',codigo:'COD-5230',titulo:'Oficina en Copiapó',tipo:'Oficina',operacion:'arriendo',precio:'UF 170/mes',direccion:'Chañarcillo, entre Vallejos y calle Makenna',sector:'Centro',ciudad:'Copiapó',dorms:0,banos:3,estac:0,m2util:120,m2total:120,desc:'Modernas oficinas en el corazón de Copiapó. Acceso por rampa, 3 baños, aire acondicionado central y red de datos.',tags:'Aire acondicionado,Red de datos,Acceso discapacitados',imagenes:'',estado:'activa',destacada:true,fecha:new Date().toISOString()},
+    {id:'p3',codigo:'COD-5200',titulo:'Local Comercial en Copiapó',tipo:'Local Comercial',operacion:'arriendo',precio:'UF 30/mes',direccion:'Ruta 30, Acceso Sur',sector:'Acceso Sur',ciudad:'Copiapó',dorms:0,banos:1,estac:2,m2util:55,m2total:55,desc:'Local comercial de alto tráfico en Acceso Sur. Ideal para comercio minorista, oficina o bodega.',tags:'Alto tráfico,Vitrina exterior,Bodega',imagenes:'',estado:'activa',destacada:false,fecha:new Date().toISOString()},
+    {id:'p4',codigo:'COD-5185',titulo:'Casa en Copiapó Centro',tipo:'Casa',operacion:'venta',precio:'UF 3.500',direccion:'Pedro León Gallo 456, Centro',sector:'Centro',ciudad:'Copiapó',dorms:3,banos:2,estac:1,m2util:95,m2total:120,desc:'Cómoda casa de dos pisos en el corazón de Copiapó. Cerca de servicios, colegios y transporte público.',tags:'Patio,Estacionamiento,Amplia cocina',imagenes:'',estado:'activa',destacada:false,fecha:new Date().toISOString()},
+    {id:'p5',codigo:'COD-5186',titulo:'Departamento en Balmaceda',tipo:'Departamento',operacion:'arriendo',precio:'UF 12/mes',direccion:'Atacama 789, Balmaceda',sector:'Balmaceda',ciudad:'Copiapó',dorms:2,banos:1,estac:0,m2util:52,m2total:52,desc:'Acogedor departamento amoblado en sector Balmaceda. Luminoso, 2 dormitorios, cocina equipada.',tags:'Amoblado,Luminoso,Internet incluido',imagenes:'',estado:'activa',destacada:false,fecha:new Date().toISOString()},
+    {id:'p6',codigo:'COD-5302',titulo:'Oficina Premium en Centro',tipo:'Oficina',operacion:'arriendo',precio:'UF 85/mes',direccion:'Chañarcillo 321, Centro',sector:'Centro',ciudad:'Copiapó',dorms:0,banos:2,estac:1,m2util:80,m2total:80,desc:'Elegante oficina con acabados premium. Sala de reuniones, recepción y dos baños privados.',tags:'Sala de reuniones,Recepción,Arco de seguridad',imagenes:'',estado:'activa',destacada:true,fecha:new Date().toISOString()},
+  ];
+  saveProps(demo);
+}
+
+// ═══════════════════════════════════════════════
+//  PAGE NAVIGATION
+// ═══════════════════════════════════════════════
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='page-home') renderPublicGrid();
+  if(id==='page-admin') refreshAdmin();
+}
+
+// ═══════════════════════════════════════════════
+//  SCROLL HELPERS
+// ═══════════════════════════════════════════════
+function scrollToProperties(){showPage('page-home');setTimeout(()=>{document.getElementById('properties-section').scrollIntoView({behavior:'smooth'})},100)}
+function scrollToWhy(){showPage('page-home');setTimeout(()=>{document.getElementById('why-section').scrollIntoView({behavior:'smooth'})},100)}
+function scrollToContact(){showPage('page-home');setTimeout(()=>{document.getElementById('contact-section').scrollIntoView({behavior:'smooth'})},100)}
+
+// ═══════════════════════════════════════════════
+//  PUBLIC GRID
+// ═══════════════════════════════════════════════
+let currentPage=1,perPage=6;
+let currentFilter={op:'',tipo:'',sector:'',search:'',precio:''};
+
+function getFilteredProps(){
+  let props=getProps().filter(p=>p.estado!=='inactiva');
+  const f=currentFilter;
+  if(f.op) props=props.filter(p=>p.operacion===f.op||(p.operacion==='venta-arriendo'));
+  if(f.tipo) props=props.filter(p=>p.tipo===f.tipo);
+  if(f.sector) props=props.filter(p=>(p.sector||'').toLowerCase().includes(f.sector.toLowerCase())||p.ciudad===f.sector);
+  if(f.search){const s=f.search.toLowerCase();props=props.filter(p=>`${p.titulo}${p.direccion}${p.sector}${p.tipo}${p.ciudad}`.toLowerCase().includes(s))}
+  return props;
+}
+
+function renderPublicGrid(){
+  updateStats();
+  const all=getFilteredProps();
+  const start=(currentPage-1)*perPage,end=start+perPage;
+  const pageProps=all.slice(start,end);
+  const grid=document.getElementById('prop-grid');
+  const countEl=document.getElementById('result-count');
+  countEl.textContent=all.length>0?`${all.length} propiedad${all.length!==1?'es':''} encontrada${all.length!==1?'s':''}`:'' ;
+  if(all.length===0){
+    grid.innerHTML=`<div class="empty-state"><div class="icon">🏠</div><h3>No se encontraron propiedades</h3><p>Intenta con otros filtros o términos de búsqueda</p></div>`;
+    document.getElementById('pagination').innerHTML='';
+    return;
+  }
+  grid.innerHTML=pageProps.map(p=>propCard(p)).join('');
+  renderPagination(all.length);
+}
+
+function propCard(p){
+  const badges={venta:'badge-venta',arriendo:'badge-arriendo','venta-arriendo':'badge-venta-arriendo'};
+  const badgeText={venta:'En Venta',arriendo:'En Arriendo','venta-arriendo':'Venta/Arriendo'};
+  const imgs=p.imagenes?p.imagenes.split(',').filter(Boolean):[];
+  const imgHtml=imgs.length>0
+    ?`<img src="${imgs[0]}" alt="${p.titulo}" onerror="this.parentElement.innerHTML='<div class=prop-img-placeholder>🏠</div>'">`
+    :`<div class="prop-img-placeholder">🏠</div>`;
+  const feats=[];
+  if(p.dorms>0) feats.push(`<div class="prop-feat"><strong>${p.dorms}</strong> Dorm.</div>`);
+  if(p.banos>0) feats.push(`<div class="prop-feat"><strong>${p.banos}</strong> Baño${p.banos!==1?'s':''}</div>`);
+  if(p.m2util>0) feats.push(`<div class="prop-feat"><strong>${p.m2util}</strong> m²</div>`);
+  if(p.estac>0) feats.push(`<div class="prop-feat"><strong>${p.estac}</strong> Est.</div>`);
+  return`<div class="prop-card" onclick="showDetail('${p.id}')">
+    <div class="prop-img">
+      ${imgHtml}
+      <span class="prop-badge ${badges[p.operacion]||'badge-venta'}">${badgeText[p.operacion]||'Venta'}</span>
+      <div class="prop-fav" onclick="event.stopPropagation();this.textContent=this.textContent==='🤍'?'❤️':'🤍'">🤍</div>
+      ${p.codigo?`<div class="prop-code">COD: ${p.codigo.replace('COD-','')}</div>`:''}
+    </div>
+    <div class="prop-body">
+      <div class="prop-price">${p.precio}</div>
+      <div class="prop-title">${p.titulo}</div>
+      <div class="prop-address">📍 ${p.direccion}${p.sector?', '+p.sector:''}</div>
+      ${feats.length?`<div class="prop-features">${feats.join('')}</div>`:''}
+      <div class="prop-actions">
+        <div class="btn-detail" onclick="event.stopPropagation();showDetail('${p.id}')">Ver detalles</div>
+        <div class="btn-contact" onclick="event.stopPropagation();openContactModal('${p.id}')">Consultar</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderPagination(total){
+  const pages=Math.ceil(total/perPage);
+  if(pages<=1){document.getElementById('pagination').innerHTML='';return}
+  let html='';
+  if(currentPage>1) html+=`<button class="page-btn" onclick="goPage(${currentPage-1})">‹</button>`;
+  for(let i=1;i<=pages;i++){
+    html+=`<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  if(currentPage<pages) html+=`<button class="page-btn" onclick="goPage(${currentPage+1})">›</button>`;
+  document.getElementById('pagination').innerHTML=html;
+}
+
+function goPage(n){currentPage=n;renderPublicGrid();document.getElementById('properties-section').scrollIntoView({behavior:'smooth'})}
+
+function updateStats(){
+  const all=getProps().filter(p=>p.estado!=='inactiva');
+  document.getElementById('stat-total').textContent=all.length;
+  document.getElementById('stat-venta').textContent=all.filter(p=>p.operacion==='venta'||p.operacion==='venta-arriendo').length;
+  document.getElementById('stat-arriendo').textContent=all.filter(p=>p.operacion==='arriendo'||p.operacion==='venta-arriendo').length;
+}
+
+// ═══════════════════════════════════════════════
+//  SEARCH & FILTERS
+// ═══════════════════════════════════════════════
+let activeSearchTab='Todos';
+function setSearchTab(el,tab){
+  document.querySelectorAll('.search-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  activeSearchTab=tab;
+}
+
+function doHeroSearch(){
+  const q=document.getElementById('hero-search').value.trim();
+  currentFilter.search=q;
+  if(activeSearchTab==='Comprar') currentFilter.op='venta';
+  else if(activeSearchTab==='Arrendar') currentFilter.op='arriendo';
+  else currentFilter.op='';
+  currentPage=1;
+  renderPublicGrid();
+  document.getElementById('properties-section').scrollIntoView({behavior:'smooth'});
+}
+
+function applyFilters(){
+  currentFilter.op=document.getElementById('f-operacion').value;
+  currentFilter.tipo=document.getElementById('f-tipo').value;
+  currentFilter.sector=document.getElementById('f-region').value;
+  currentFilter.precio=document.getElementById('f-precio').value;
+  currentPage=1;
+  renderPublicGrid();
+}
+
+function clearFilters(){
+  currentFilter={op:'',tipo:'',sector:'',search:'',precio:''};
+  document.getElementById('f-operacion').value='';
+  document.getElementById('f-tipo').value='';
+  document.getElementById('f-region').value='';
+  document.getElementById('f-precio').value='';
+  document.getElementById('hero-search').value='';
+  currentPage=1;
+  renderPublicGrid();
+}
+
+function showAllProperties(){
+  clearFilters();
+  document.getElementById('properties-section').scrollIntoView({behavior:'smooth'});
+}
+
+function applyFilterDirect(op){
+  clearFilters();
+  currentFilter.op=op;
+  document.getElementById('f-operacion').value=op;
+  renderPublicGrid();
+  document.getElementById('properties-section').scrollIntoView({behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════
+//  PROPERTY DETAIL
+// ═══════════════════════════════════════════════
+function showDetail(id){
+  const p=getProps().find(x=>x.id===id);
+  if(!p) return;
+  const badges={venta:'badge-venta',arriendo:'badge-arriendo','venta-arriendo':'badge-venta-arriendo'};
+  const badgeText={venta:'En Venta',arriendo:'En Arriendo','venta-arriendo':'Venta y Arriendo'};
+  const imgs=p.imagenes?p.imagenes.split(',').filter(Boolean):[];
+  const imgHtml=imgs.length>0
+    ?`<img src="${imgs[0]}" alt="${p.titulo}" style="width:100%;height:100%;object-fit:cover">`
+    :`<div class="detail-hero-placeholder">🏠</div>`;
+  const tags=p.tags?p.tags.split(',').filter(Boolean):[];
+  const feats=[];
+  if(p.dorms>0) feats.push({val:p.dorms,lbl:'Dormitorios'});
+  if(p.banos>0) feats.push({val:p.banos,lbl:'Baños'});
+  if(p.m2util>0) feats.push({val:p.m2util+' m²',lbl:'Sup. Útil'});
+  if(p.m2total>0) feats.push({val:p.m2total+' m²',lbl:'Sup. Total'});
+  if(p.estac>0) feats.push({val:p.estac,lbl:'Estacionamientos'});
+  document.getElementById('detail-content').innerHTML=`
+    <div class="detail-hero">
+      ${imgHtml}
+      <div class="detail-back" onclick="showPage('page-home')">← Volver</div>
+      <span class="prop-badge ${badges[p.operacion]||'badge-venta'}" style="position:absolute;bottom:20px;left:20px;font-size:13px;padding:6px 14px">${badgeText[p.operacion]||'Venta'}</span>
+    </div>
+    <div class="detail-body">
+      <div class="detail-main">
+        <div class="detail-price">${p.precio}</div>
+        <h1 class="detail-title">${p.titulo}</h1>
+        <div class="detail-address">📍 ${p.direccion}${p.sector?', '+p.sector:''}, ${p.ciudad}</div>
+        ${feats.length?`<div class="detail-features">${feats.map(f=>`<div class="detail-feat"><div class="val">${f.val}</div><div class="lbl">${f.lbl}</div></div>`).join('')}</div>`:''}
+        <div class="detail-desc">${p.desc||'Sin descripción disponible.'}</div>
+        ${tags.length?`<div class="detail-tags">${tags.map(t=>`<span class="detail-tag">✓ ${t.trim()}</span>`).join('')}</div>`:''}
+        ${p.codigo?`<p style="font-size:12px;color:var(--muted);margin-top:8px">Código: ${p.codigo}</p>`:''}
+        ${imgs.length>1?`<div style="margin-top:24px"><h3 style="font-size:16px;font-weight:700;margin-bottom:12px">Galería de Fotos</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">${imgs.map(img=>`<img src="${img}" style="width:100%;height:140px;object-fit:cover;border-radius:8px;cursor:pointer" onerror="this.style.display='none'">`).join('')}</div></div>`:''}
+      </div>
+      <div>
+        <div class="contact-card">
+          <h3>¿Te interesa esta propiedad?</h3>
+          <div class="agent">Consulta con nuestros asesores</div>
+          <div class="contact-form">
+            <input type="text" id="d-nombre" placeholder="Tu nombre *">
+            <input type="email" id="d-email" placeholder="Tu email *">
+            <input type="tel" id="d-tel" placeholder="Teléfono">
+            <textarea id="d-msg" placeholder="Mensaje...">Me interesa la propiedad ${p.codigo||p.titulo}, por favor contáctenme.</textarea>
+            <button class="btn-send" onclick="sendContactDetail('${p.id}','${p.titulo}')">📬 Enviar Consulta</button>
+          </div>
+          <div class="contact-phones" style="margin-top:14px">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px">O contáctanos directamente:</div>
+            <a href="tel:+56985230195" style="display:block;margin-bottom:4px">📞 +56 9 85230195</a>
+            <a href="mailto:contacto@coppergi.cl">✉️ contacto@coppergi.cl</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  showPage('page-detail');
+}
+
+// ═══════════════════════════════════════════════
+//  CONTACT / CONSULT
+// ═══════════════════════════════════════════════
+function openContactModal(propId){
+  if(propId){
+    const p=getProps().find(x=>x.id===propId);
+    if(p) document.getElementById('cnt-prop').value=`${p.titulo} (${p.codigo||p.id})`;
+  }
+  openModal('modal-contact');
+}
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.addEventListener('click',e=>{if(e.target.classList.contains('modal-overlay'))e.target.classList.remove('open')});
+
+function sendContact(){
+  const nombre=document.getElementById('cnt-nombre').value.trim();
+  const email=document.getElementById('cnt-email').value.trim();
+  const msg=document.getElementById('cnt-msg').value.trim();
+  if(!nombre||!email||!msg){showToast('Por favor completa los campos requeridos','error');return}
+  const contacts=getContacts();
+  contacts.unshift({
+    id:'c'+Date.now(),
+    nombre,email,
+    tel:document.getElementById('cnt-tel').value,
+    propiedad:document.getElementById('cnt-prop').value,
+    mensaje:msg,
+    fecha:new Date().toLocaleString('es-CL')
+  });
+  saveContacts(contacts);
+  closeModal('modal-contact');
+  showToast('¡Consulta enviada! Te contactaremos pronto 😊','success');
+  document.getElementById('cnt-nombre').value='';
+  document.getElementById('cnt-email').value='';
+  document.getElementById('cnt-tel').value='';
+  document.getElementById('cnt-msg').value='';
+  document.getElementById('cnt-prop').value='';
+}
+
+function sendContactDetail(propId,propTitle){
+  const nombre=document.getElementById('d-nombre').value.trim();
+  const email=document.getElementById('d-email').value.trim();
+  if(!nombre||!email){showToast('Nombre y email son requeridos','error');return}
+  const contacts=getContacts();
+  contacts.unshift({
+    id:'c'+Date.now(),
+    nombre,email,
+    tel:document.getElementById('d-tel').value,
+    propiedad:propTitle,
+    mensaje:document.getElementById('d-msg').value,
+    fecha:new Date().toLocaleString('es-CL')
+  });
+  saveContacts(contacts);
+  showToast('¡Consulta enviada! Te contactaremos pronto 😊','success');
+}
+
+// ═══════════════════════════════════════════════
+//  ADMIN AUTH
+// ═══════════════════════════════════════════════
+const ADMIN_USER='admin', ADMIN_PASS='admin';
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim();
+  const p=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-error');
+  if(u===ADMIN_USER&&p===ADMIN_PASS){
+    err.style.display='none';
+    showPage('page-admin');
+    refreshAdmin();
+  } else {
+    err.style.display='block';
+    document.getElementById('login-pass').value='';
+  }
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.getElementById('page-admin-login').classList.contains('active'))doLogin();
+});
+function doLogout(){showPage('page-home')}
+
+// ═══════════════════════════════════════════════
+//  ADMIN SECTIONS
+// ═══════════════════════════════════════════════
+function showAdminSection(name,el){
+  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('admin-'+name).classList.add('active');
+  document.querySelectorAll('.sidebar-nav-item').forEach(i=>i.classList.remove('active'));
+  if(el) el.classList.add('active');
+  if(name==='nueva-prop'){
+    resetPropForm();
+    document.getElementById('form-page-title').textContent='Nueva Propiedad';
+  }
+  if(name==='propiedades') renderAdminTable();
+  if(name==='contactos') renderAdminContacts();
+  if(name==='dashboard') refreshAdmin();
+}
+
+function refreshAdmin(){
+  const props=getProps();
+  const contacts=getContacts();
+  // KPIs
+  document.getElementById('kpi-total').textContent=props.length;
+  document.getElementById('kpi-venta').textContent=props.filter(p=>p.operacion==='venta'||p.operacion==='venta-arriendo').length;
+  document.getElementById('kpi-arriendo').textContent=props.filter(p=>p.operacion==='arriendo'||p.operacion==='venta-arriendo').length;
+  document.getElementById('kpi-consultas').textContent=contacts.length;
+  document.getElementById('kpi-activas').textContent=props.filter(p=>p.estado==='activa'||p.estado==='destacada').length;
+  // Recent props
+  renderDashRecent(props.slice(0,6));
+  // Recent contacts
+  renderDashContacts(contacts.slice(0,5));
+}
+
+function renderDashRecent(props){
+  const tb=document.getElementById('dash-recent-tbody');
+  if(!props.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">No hay propiedades aún. <a onclick="showAdminSection(\'nueva-prop\')" style="color:var(--copper);cursor:pointer;font-weight:600">Agrega la primera</a></td></tr>';return}
+  tb.innerHTML=props.map(p=>{
+    const imgs=p.imagenes?p.imagenes.split(',').filter(Boolean):[];
+    const imgEl=imgs.length?`<img class="tbl-img" src="${imgs[0]}" onerror="this.style.display='none'">`:`<div class="tbl-img-placeholder">🏠</div>`;
+    const pillClass={venta:'pill-venta',arriendo:'pill-arriendo','venta-arriendo':'pill-venta'}[p.operacion]||'pill-venta';
+    const statusClass=p.estado==='activa'||p.estado==='destacada'?'pill-activa':'pill-inactiva';
+    return`<tr>
+      <td>${imgEl}</td>
+      <td><strong>${p.codigo||'–'}</strong></td>
+      <td>${p.titulo}</td>
+      <td><span class="status-pill ${pillClass}">${p.operacion}</span></td>
+      <td style="color:var(--copper);font-weight:700">${p.precio}</td>
+      <td><span class="status-pill ${statusClass}">${p.estado}</span></td>
+      <td><div class="tbl-actions">
+        <button class="btn-edit" onclick="editProp('${p.id}')">Editar</button>
+        <button class="btn-delete" onclick="deleteProp('${p.id}')">Eliminar</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderDashContacts(contacts){
+  const tb=document.getElementById('dash-contacts-tbody');
+  if(!contacts.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Sin consultas aún</td></tr>';return}
+  tb.innerHTML=contacts.map(c=>`<tr>
+    <td style="white-space:nowrap">${c.fecha}</td>
+    <td><strong>${c.nombre}</strong></td>
+    <td>${c.email}</td>
+    <td>${c.tel||'–'}</td>
+    <td>${c.propiedad||'General'}</td>
+    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.mensaje}</td>
+  </tr>`).join('');
+}
+
+function renderAdminTable(){
+  const q=(document.getElementById('admin-search')?.value||'').toLowerCase();
+  const op=document.getElementById('admin-filter-op')?.value||'';
+  const st=document.getElementById('admin-filter-status')?.value||'';
+  let props=getProps();
+  if(q) props=props.filter(p=>`${p.titulo}${p.codigo}${p.sector}${p.tipo}${p.precio}`.toLowerCase().includes(q));
+  if(op) props=props.filter(p=>p.operacion===op);
+  if(st) props=props.filter(p=>p.estado===st||(st==='activa'&&p.estado==='destacada'));
+  document.getElementById('admin-prop-count').textContent=`(${props.length})`;
+  const tb=document.getElementById('admin-prop-tbody');
+  if(!props.length){tb.innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:24px">No se encontraron propiedades</td></tr>';return}
+  tb.innerHTML=props.map(p=>{
+    const imgs=p.imagenes?p.imagenes.split(',').filter(Boolean):[];
+    const imgEl=imgs.length?`<img class="tbl-img" src="${imgs[0]}" onerror="this.style.display='none'">`:`<div class="tbl-img-placeholder">🏠</div>`;
+    const pillClass={venta:'pill-venta',arriendo:'pill-arriendo','venta-arriendo':'pill-venta'}[p.operacion]||'pill-venta';
+    const statusClass=p.estado==='activa'||p.estado==='destacada'?'pill-activa':'pill-inactiva';
+    return`<tr>
+      <td>${imgEl}</td>
+      <td><strong>${p.codigo||'–'}</strong></td>
+      <td style="max-width:180px">${p.titulo}</td>
+      <td>${p.tipo}</td>
+      <td><span class="status-pill ${pillClass}">${p.operacion}</span></td>
+      <td style="color:var(--copper);font-weight:700;white-space:nowrap">${p.precio}</td>
+      <td>${p.dorms||'–'}</td>
+      <td>${p.m2util||'–'}</td>
+      <td>${p.sector||'–'}</td>
+      <td><span class="status-pill ${statusClass}">${p.estado}</span></td>
+      <td><div class="tbl-actions">
+        <button class="btn-view" onclick="showDetail('${p.id}')">Ver</button>
+        <button class="btn-edit" onclick="editProp('${p.id}')">Editar</button>
+        <button class="btn-delete" onclick="deleteProp('${p.id}')">Eliminar</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAdminContacts(){
+  const contacts=getContacts();
+  document.getElementById('admin-contact-count').textContent=`(${contacts.length})`;
+  const tb=document.getElementById('admin-contacts-tbody');
+  if(!contacts.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">No hay consultas aún</td></tr>';return}
+  tb.innerHTML=contacts.map((c,i)=>`<tr>
+    <td style="white-space:nowrap">${c.fecha}</td>
+    <td><strong>${c.nombre}</strong></td>
+    <td>${c.email}</td>
+    <td>${c.tel||'–'}</td>
+    <td>${c.propiedad||'General'}</td>
+    <td style="max-width:200px">${c.mensaje}</td>
+    <td><button class="btn-delete" onclick="deleteContact(${i})">Eliminar</button></td>
+  </tr>`).join('');
+}
+
+function deleteContact(i){
+  if(!confirm('¿Eliminar esta consulta?')) return;
+  const c=getContacts();
+  c.splice(i,1);
+  saveContacts(c);
+  renderAdminContacts();
+  showToast('Consulta eliminada','info');
+}
+
+// ═══════════════════════════════════════════════
+//  PROPERTY CRUD
+// ═══════════════════════════════════════════════
+function resetPropForm(){
+  document.getElementById('prop-id').value='';
+  ['prop-titulo','prop-codigo','prop-precio','prop-direccion','prop-sector','prop-desc','prop-tags','prop-imagenes'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  document.getElementById('prop-tipo').value='';
+  document.getElementById('prop-operacion').value='';
+  document.getElementById('prop-ciudad').value='Copiapó';
+  ['prop-dorms','prop-banos','prop-estac','prop-m2util','prop-m2total','prop-antiguedad'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value='';
+  });
+  document.querySelector('input[name="prop-estado"][value="activa"]').checked=true;
+  document.getElementById('img-preview-list').innerHTML='';
+  document.getElementById('img-url-input').value='';
+}
+
+function addImageUrl(){
+  const url=document.getElementById('img-url-input').value.trim();
+  if(!url) return;
+  const existing=document.getElementById('prop-imagenes').value;
+  const urls=existing?existing.split(',').filter(Boolean):[];
+  urls.push(url);
+  document.getElementById('prop-imagenes').value=urls.join(',');
+  document.getElementById('img-url-input').value='';
+  renderImgPreview(urls);
+}
+
+function renderImgPreview(urls){
+  document.getElementById('img-preview-list').innerHTML=urls.map((u,i)=>
+    `<div style="position:relative;display:inline-block">
+      <img class="img-thumb" src="${u}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2260%22><rect width=%2280%22 height=%2260%22 fill=%22%23e8d5c4%22/><text x=%2240%22 y=%2235%22 text-anchor=%22middle%22 font-size=%2220%22>🏠</text></svg>'">
+      <button onclick="removeImg(${i})" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:#e53935;color:#fff;border:none;font-size:10px;cursor:pointer;line-height:18px;text-align:center">×</button>
+    </div>`
+  ).join('');
+}
+
+function removeImg(i){
+  const urls=document.getElementById('prop-imagenes').value.split(',').filter(Boolean);
+  urls.splice(i,1);
+  document.getElementById('prop-imagenes').value=urls.join(',');
+  renderImgPreview(urls);
+}
+
+function savePropiedad(){
+  const titulo=document.getElementById('prop-titulo').value.trim();
+  const tipo=document.getElementById('prop-tipo').value;
+  const operacion=document.getElementById('prop-operacion').value;
+  const precio=document.getElementById('prop-precio').value.trim();
+  const direccion=document.getElementById('prop-direccion').value.trim();
+  if(!titulo||!tipo||!operacion||!precio||!direccion){
+    showToast('Completa los campos obligatorios (*)','error');return;
+  }
+  const props=getProps();
+  const editId=document.getElementById('prop-id').value;
+  const estado=document.querySelector('input[name="prop-estado"]:checked').value;
+  const prop={
+    id:editId||'p'+Date.now(),
+    codigo:document.getElementById('prop-codigo').value.trim()||('COD-'+Math.floor(Math.random()*9000+1000)),
+    titulo,tipo,operacion,precio,direccion,
+    sector:document.getElementById('prop-sector').value.trim(),
+    ciudad:document.getElementById('prop-ciudad').value.trim(),
+    dorms:parseInt(document.getElementById('prop-dorms').value)||0,
+    banos:parseInt(document.getElementById('prop-banos').value)||0,
+    estac:parseInt(document.getElementById('prop-estac').value)||0,
+    m2util:parseInt(document.getElementById('prop-m2util').value)||0,
+    m2total:parseInt(document.getElementById('prop-m2total').value)||0,
+    antiguedad:document.getElementById('prop-antiguedad').value.trim(),
+    desc:document.getElementById('prop-desc').value.trim(),
+    tags:document.getElementById('prop-tags').value.trim(),
+    imagenes:document.getElementById('prop-imagenes').value.trim(),
+    estado,
+    destacada:estado==='destacada',
+    fecha:editId?props.find(p=>p.id===editId)?.fecha:new Date().toISOString()
+  };
+  if(editId){
+    const idx=props.findIndex(p=>p.id===editId);
+    if(idx>=0) props[idx]=prop;
+  } else {
+    props.unshift(prop);
+  }
+  saveProps(props);
+  showToast(editId?'Propiedad actualizada ✓':'Propiedad guardada ✓','success');
+  showAdminSection('propiedades',document.querySelector('[onclick*=propiedades]'));
+  renderAdminTable();
+}
+
+function editProp(id){
+  const p=getProps().find(x=>x.id===id);
+  if(!p) return;
+  resetPropForm();
+  document.getElementById('prop-id').value=p.id;
+  document.getElementById('prop-titulo').value=p.titulo||'';
+  document.getElementById('prop-codigo').value=p.codigo||'';
+  document.getElementById('prop-tipo').value=p.tipo||'';
+  document.getElementById('prop-operacion').value=p.operacion||'';
+  document.getElementById('prop-precio').value=p.precio||'';
+  document.getElementById('prop-direccion').value=p.direccion||'';
+  document.getElementById('prop-sector').value=p.sector||'';
+  document.getElementById('prop-ciudad').value=p.ciudad||'Copiapó';
+  document.getElementById('prop-dorms').value=p.dorms||'';
+  document.getElementById('prop-banos').value=p.banos||'';
+  document.getElementById('prop-estac').value=p.estac||'';
+  document.getElementById('prop-m2util').value=p.m2util||'';
+  document.getElementById('prop-m2total').value=p.m2total||'';
+  document.getElementById('prop-antiguedad').value=p.antiguedad||'';
+  document.getElementById('prop-desc').value=p.desc||'';
+  document.getElementById('prop-tags').value=p.tags||'';
+  document.getElementById('prop-imagenes').value=p.imagenes||'';
+  const radioVal=p.estado||'activa';
+  const radioEl=document.querySelector(`input[name="prop-estado"][value="${radioVal}"]`);
+  if(radioEl) radioEl.checked=true;
+  if(p.imagenes){
+    renderImgPreview(p.imagenes.split(',').filter(Boolean));
+  }
+  document.getElementById('form-page-title').textContent='Editar Propiedad';
+  showAdminSection('nueva-prop',document.querySelector('[onclick*=nueva-prop]'));
+}
+
+function deleteProp(id){
+  if(!confirm('¿Eliminar esta propiedad? Esta acción no se puede deshacer.')) return;
+  const props=getProps().filter(p=>p.id!==id);
+  saveProps(props);
+  renderAdminTable();
+  refreshAdmin();
+  renderPublicGrid();
+  showToast('Propiedad eliminada','info');
+}
+
+function cancelForm(){
+  showAdminSection('propiedades',document.querySelector('[onclick*=propiedades]'));
+}
+
+// ═══════════════════════════════════════════════
+//  DB EXPORT / IMPORT
+// ═══════════════════════════════════════════════
+function exportDB(){
+  const data={properties:getProps(),contacts:getContacts(),exportDate:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='coppergi-database.json';
+  a.click();
+  showToast('Datos exportados ✓','success');
+}
+
+function importDB(input){
+  const file=input.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(data.properties) saveProps(data.properties);
+      if(data.contacts) saveContacts(data.contacts);
+      refreshAdmin();
+      renderPublicGrid();
+      showToast(`Importado: ${(data.properties||[]).length} propiedades ✓`,'success');
+    }catch{showToast('Error al importar archivo','error')}
+  };
+  reader.readAsText(file);
+}
+
+function clearDB(){
+  saveProps([]);saveContacts([]);
+  refreshAdmin();renderPublicGrid();
+  showToast('Base de datos limpiada','info');
+}
+
+// ═══════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════
+function showToast(msg,type='info'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className=`toast ${type} show`;
+  setTimeout(()=>t.className='toast',3500);
+}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+seedData();
+renderPublicGrid();
+</script>
+</body>
+</html>
