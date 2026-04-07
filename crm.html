@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Copper GI - Sistema CRM Inmobiliario</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; font-size: 13px; }
@@ -1250,180 +1251,201 @@
 
 <script>
 // ════════════════════════════════════════════════════════════
-//  COPPER GI CRM — DATABASE ENGINE (localStorage)
-//  Schema version: 1.0
+//  COPPER GI CRM — DATABASE ENGINE (Supabase)
+//  Project: xcpyokvymafndlkyycmn | Schema version: 2.0
 // ════════════════════════════════════════════════════════════
 
-const DB_KEYS = {
-  props:      'crmdb_propiedades',
-  clientes:   'crmdb_clientes',
-  contactos:  'crmdb_contactos',
-  ventas:     'crmdb_ventas',
-  actividades:'crmdb_actividades',
-  meta:       'crmdb_meta'
-};
+const SUPA_URL  = 'https://xcpyokvymafndlkyycmn.supabase.co';
+const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjcHlva3Z5bWFmbmRsa3l5Y21uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MjQwNDEsImV4cCI6MjA5MTEwMDA0MX0.zyOjymuuqXXB7XChu0dB04YzmnsIRa9gp8oMuHG76h0';
+const db = supabase.createClient(SUPA_URL, SUPA_KEY);
 
-// ── GENERIC DB HELPERS ──────────────────────────────────────
-function dbGet(key) {
-  try { return JSON.parse(localStorage.getItem(key) || '[]'); }
-  catch { return []; }
-}
-function dbSet(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
-}
-function dbMeta() {
-  try { return JSON.parse(localStorage.getItem(DB_KEYS.meta) || '{}'); }
-  catch { return {}; }
-}
-function dbMetaSet(obj) {
-  localStorage.setItem(DB_KEYS.meta, JSON.stringify({...dbMeta(), ...obj}));
-}
 function genId(prefix) {
   return prefix + '-' + Date.now() + '-' + Math.floor(Math.random()*1000);
 }
 function today() {
   return new Date().toLocaleDateString('es-CL');
 }
-
-// ── SEED (only if DB is empty) ──────────────────────────────
-function dbSeedIfEmpty() {
-  if (dbGet(DB_KEYS.props).length > 0) return; // already seeded
-
-  dbSet(DB_KEYS.props, [
-    { id:'P001', dir:'Av. Atacama 1234, Centro, Copiapó', tipo:'Departamento', estado:'venta', precio:'UF 2.800', m2:'72', dorms:'2', banos:'2', cap:'Jaime V.', fecha: '01/01/2026', notas:'' },
-    { id:'P002', dir:'Los Cóndores 456, Los Cóndores, Copiapó', tipo:'Casa', estado:'arriendo', precio:'UF 28/mes', m2:'150', dorms:'3', banos:'2', cap:'Jaime V.', fecha:'15/01/2026', notas:'' },
-    { id:'P003', dir:'Pedro León Gallo 789, Centro, Copiapó', tipo:'Departamento', estado:'venta', precio:'UF 1.900', m2:'55', dorms:'2', banos:'1', cap:'María S.', fecha:'20/01/2026', notas:'' },
-    { id:'P004', dir:'Balmaceda 321, Balmaceda, Copiapó', tipo:'Casa', estado:'venta', precio:'UF 4.500', m2:'200', dorms:'4', banos:'3', cap:'Pedro A.', fecha:'05/02/2026', notas:'' },
-    { id:'P005', dir:'Chañarcillo 1020, Centro, Copiapó', tipo:'Oficina', estado:'arriendo', precio:'UF 45/mes', m2:'80', dorms:'–', banos:'1', cap:'Jaime V.', fecha:'10/02/2026', notas:'' },
-    { id:'P006', dir:'Merced 456, Centro, Copiapó', tipo:'Local Comercial', estado:'venta', precio:'UF 3.200', m2:'50', dorms:'–', banos:'1', cap:'María S.', fecha:'14/02/2026', notas:'' },
-    { id:'P007', dir:'Villa Chuquicamata 11, Copiapó', tipo:'Casa', estado:'vendida', precio:'UF 6.800', m2:'280', dorms:'5', banos:'4', cap:'Pedro A.', fecha:'01/03/2026', notas:'Vendida - cliente muy satisfecho' },
-    { id:'P008', dir:'Av. Copayapu 890, Copiapó', tipo:'Departamento', estado:'arriendo', precio:'UF 18/mes', m2:'48', dorms:'1', banos:'1', cap:'Jaime V.', fecha:'20/03/2026', notas:'' },
-  ]);
-
-  dbSet(DB_KEYS.clientes, [
-    { id: genId('C'), nombre:'Andrés Fuentes', email:'afuentes@gmail.com', tel:'+56 9 8765 4321', tipo:'Comprador', presupuesto:'UF 3.000', sector:'Centro', notas:'Busca depto 2D en Centro', fecha: today() },
-    { id: genId('C'), nombre:'Carmen López', email:'clopez@empresa.cl', tel:'+56 9 7654 3210', tipo:'Propietario', presupuesto:'', sector:'Balmaceda', notas:'Propietaria de 2 casas', fecha: today() },
-    { id: genId('C'), nombre:'Roberto Sánchez', email:'rsanchez@outlook.com', tel:'+56 9 6543 2109', tipo:'Arrendatario', presupuesto:'UF 30/mes', sector:'Cualquier sector', notas:'', fecha: today() },
-    { id: genId('C'), nombre:'Valentina Torres', email:'vtorres@gmail.com', tel:'+56 9 5432 1098', tipo:'Comprador', presupuesto:'UF 5.000', sector:'Los Cóndores', notas:'Familia con 2 hijos, necesita patio', fecha: today() },
-    { id: genId('C'), nombre:'Felipe Contreras', email:'fcontreras@empresa.cl', tel:'+56 9 4321 0987', tipo:'Vendedor', presupuesto:'', sector:'Centro', notas:'Quiere vender casa familiar', fecha: today() },
-    { id: genId('C'), nombre:'Pamela Rodríguez', email:'prodriguez@gmail.com', tel:'+56 9 3210 9876', tipo:'Propietario', presupuesto:'', sector:'Balmaceda', notas:'Busca administrador para arriendo', fecha: today() },
-    { id: genId('C'), nombre:'Diego Morales', email:'dmorales@outlook.com', tel:'+56 9 2109 8765', tipo:'Comprador', presupuesto:'UF 2.500', sector:'Centro', notas:'Primera vivienda', fecha: today() },
-    { id: genId('C'), nombre:'Javiera Vega', email:'jvega@empresa.cl', tel:'+56 9 1098 7654', tipo:'Arrendatario', presupuesto:'UF 25/mes', sector:'Cualquier sector', notas:'Necesita estacionamiento', fecha: today() },
-  ]);
-
-  dbSet(DB_KEYS.contactos, [
-    { id: genId('V'), fecha:'05/04/2026', cliente:'Andrés Fuentes', propiedad:'P001 – Atacama 1234', origen:'Mercado Libre', estado:'Pendiente', agente:'Jaime V.', notas:'' },
-    { id: genId('V'), fecha:'04/04/2026', cliente:'Carmen López', propiedad:'P003 – León Gallo 789', origen:'Web', estado:'Confirmada', agente:'María S.', notas:'Confirmar a las 11:00 hrs' },
-    { id: genId('V'), fecha:'03/04/2026', cliente:'Roberto Sánchez', propiedad:'P002 – Los Cóndores 456', origen:'WhatsApp', estado:'Realizada', agente:'Jaime V.', notas:'Interesado, pide cotización' },
-    { id: genId('V'), fecha:'02/04/2026', cliente:'Valentina Torres', propiedad:'P004 – Balmaceda 321', origen:'Web', estado:'Pendiente', agente:'Pedro A.', notas:'' },
-    { id: genId('V'), fecha:'01/04/2026', cliente:'Felipe Contreras', propiedad:'P005 – Chañarcillo 1020', origen:'Teléfono', estado:'Cancelada', agente:'Jaime V.', notas:'Reprogramar para la semana siguiente' },
-  ]);
-
-  dbSet(DB_KEYS.ventas, [
-    { id: genId('N'), fecha:'15/03/2026', prop:'Casa Villa Chuquicamata', cliente:'Patricio Urzúa', tipo:'Venta', precio:'UF 6.800', comision:'UF 136', estado:'Cerrada', notas:'' },
-    { id: genId('N'), fecha:'28/02/2026', prop:'Depto Atacama 1234', cliente:'Andrés Fuentes', tipo:'Arriendo', precio:'UF 28/mes', comision:'UF 28', estado:'Activa', notas:'' },
-    { id: genId('N'), fecha:'10/02/2026', prop:'Oficina Chañarcillo 1020', cliente:'Corp. Minera Ltda.', tipo:'Arriendo', precio:'UF 45/mes', comision:'UF 45', estado:'Activa', notas:'' },
-  ]);
-
-  dbSet(DB_KEYS.actividades, [
-    { id: genId('A'), fecha: today(), tipo:'Llamada', descripcion:'Llamada a Andrés Fuentes sobre P001', agente:'Jaime V.' },
-    { id: genId('A'), fecha: today(), tipo:'Visita', descripcion:'Visita programada: Carmen López → P003', agente:'María S.' },
-    { id: genId('A'), fecha: today(), tipo:'Email', descripcion:'Enviada propuesta a Valentina Torres', agente:'Pedro A.' },
-  ]);
-
-  dbMetaSet({ seeded: true, version: '1.0', createdAt: new Date().toISOString() });
+function isoToday() {
+  return new Date().toISOString().split('T')[0];
+}
+function clDate(isoDate) {
+  if (!isoDate) return today();
+  const [y,m,d] = isoDate.split('-');
+  return `${d}/${m}/${y}`;
 }
 
-// ── LIVE DATA ACCESSORS ─────────────────────────────────────
-function getPropiedades() { return dbGet(DB_KEYS.props); }
-function getClientes()    { return dbGet(DB_KEYS.clientes); }
-function getContactos()   { return dbGet(DB_KEYS.contactos); }
-function getVentas()      { return dbGet(DB_KEYS.ventas); }
-function getActividades() { return dbGet(DB_KEYS.actividades); }
+// ── In-memory cache (populated on load) ─────────────────────
+let _props = [], _clientes = [], _contactos = [], _ventas = [], _actividades = [];
+
+// ── SEED DATA (inserted if tables are empty) ─────────────────
+const SEED_PROPS = [
+  { id:'P001', dir:'Av. Atacama 1234, Centro, Copiapó', tipo:'Departamento', estado:'venta', moneda:'UF', precio:2800, m2:72, dorms:2, banos:2, cap:'Jaime V.', fecha:'2026-01-01', notas:'' },
+  { id:'P002', dir:'Los Cóndores 456, Los Cóndores, Copiapó', tipo:'Casa', estado:'arriendo', moneda:'UF', precio:28, m2:150, dorms:3, banos:2, cap:'Jaime V.', fecha:'2026-01-15', notas:'' },
+  { id:'P003', dir:'Pedro León Gallo 789, Centro, Copiapó', tipo:'Departamento', estado:'venta', moneda:'UF', precio:1900, m2:55, dorms:2, banos:1, cap:'María S.', fecha:'2026-01-20', notas:'' },
+  { id:'P004', dir:'Balmaceda 321, Balmaceda, Copiapó', tipo:'Casa', estado:'venta', moneda:'UF', precio:4500, m2:200, dorms:4, banos:3, cap:'Pedro A.', fecha:'2026-02-05', notas:'' },
+  { id:'P005', dir:'Chañarcillo 1020, Centro, Copiapó', tipo:'Oficina', estado:'arriendo', moneda:'UF', precio:45, m2:80, dorms:0, banos:1, cap:'Jaime V.', fecha:'2026-02-10', notas:'' },
+  { id:'P006', dir:'Merced 456, Centro, Copiapó', tipo:'Local Comercial', estado:'venta', moneda:'UF', precio:3200, m2:50, dorms:0, banos:1, cap:'María S.', fecha:'2026-02-14', notas:'' },
+  { id:'P007', dir:'Villa Chuquicamata 11, Copiapó', tipo:'Casa', estado:'vendida', moneda:'UF', precio:6800, m2:280, dorms:5, banos:4, cap:'Pedro A.', fecha:'2026-03-01', notas:'Vendida - cliente muy satisfecho' },
+  { id:'P008', dir:'Av. Copayapu 890, Copiapó', tipo:'Departamento', estado:'arriendo', moneda:'UF', precio:18, m2:48, dorms:1, banos:1, cap:'Jaime V.', fecha:'2026-03-20', notas:'' },
+];
+const SEED_CLIENTES = [
+  { id:genId('C'), nombre:'Andrés Fuentes', apellido:'', email:'afuentes@gmail.com', tel:'+56 9 8765 4321', tipo:'Comprador', presupuesto:3000, sector:'Centro', notas:'Busca depto 2D en Centro', fecha:'2026-04-06' },
+  { id:genId('C'), nombre:'Carmen López', apellido:'', email:'clopez@empresa.cl', tel:'+56 9 7654 3210', tipo:'Propietario', presupuesto:null, sector:'Balmaceda', notas:'Propietaria de 2 casas', fecha:'2026-04-06' },
+  { id:genId('C'), nombre:'Roberto Sánchez', apellido:'', email:'rsanchez@outlook.com', tel:'+56 9 6543 2109', tipo:'Arrendatario', presupuesto:null, sector:'Cualquier sector', notas:'', fecha:'2026-04-06' },
+  { id:genId('C'), nombre:'Valentina Torres', apellido:'', email:'vtorres@gmail.com', tel:'+56 9 5432 1098', tipo:'Comprador', presupuesto:5000, sector:'Los Cóndores', notas:'Familia con 2 hijos, necesita patio', fecha:'2026-04-06' },
+  { id:genId('C'), nombre:'Felipe Contreras', apellido:'', email:'fcontreras@empresa.cl', tel:'+56 9 4321 0987', tipo:'Vendedor', presupuesto:null, sector:'Centro', notas:'Quiere vender casa familiar', fecha:'2026-04-06' },
+  { id:genId('C'), nombre:'Pamela Rodríguez', apellido:'', email:'prodriguez@gmail.com', tel:'+56 9 3210 9876', tipo:'Propietario', presupuesto:null, sector:'Balmaceda', notas:'Busca administrador para arriendo', fecha:'2026-04-06' },
+  { id:genId('C'), nombre:'Diego Morales', apellido:'', email:'dmorales@outlook.com', tel:'+56 9 2109 8765', tipo:'Comprador', presupuesto:2500, sector:'Centro', notas:'Primera vivienda', fecha:'2026-04-06' },
+  { id:genId('C'), nombre:'Javiera Vega', apellido:'', email:'jvega@empresa.cl', tel:'+56 9 1098 7654', tipo:'Arrendatario', presupuesto:null, sector:'Cualquier sector', notas:'Necesita estacionamiento', fecha:'2026-04-06' },
+];
+const SEED_VISITAS = [
+  { id:genId('V'), fecha:'2026-04-05', hora:'10:00', cliente:'Andrés Fuentes', propiedad:'P001 – Atacama 1234', origen:'Mercado Libre', estado:'Pendiente', agente:'Jaime V.', notas:'' },
+  { id:genId('V'), fecha:'2026-04-04', hora:'11:00', cliente:'Carmen López', propiedad:'P003 – León Gallo 789', origen:'Web', estado:'Confirmada', agente:'María S.', notas:'Confirmar a las 11:00 hrs' },
+  { id:genId('V'), fecha:'2026-04-03', hora:'09:30', cliente:'Roberto Sánchez', propiedad:'P002 – Los Cóndores 456', origen:'WhatsApp', estado:'Realizada', agente:'Jaime V.', notas:'Interesado, pide cotización' },
+  { id:genId('V'), fecha:'2026-04-02', hora:'15:00', cliente:'Valentina Torres', propiedad:'P004 – Balmaceda 321', origen:'Web', estado:'Pendiente', agente:'Pedro A.', notas:'' },
+  { id:genId('V'), fecha:'2026-04-01', hora:'12:00', cliente:'Felipe Contreras', propiedad:'P005 – Chañarcillo 1020', origen:'Teléfono', estado:'Cancelada', agente:'Jaime V.', notas:'Reprogramar para la semana siguiente' },
+];
+const SEED_NEGOCIOS = [
+  { id:genId('N'), fecha:'2026-03-15', prop:'Casa Villa Chuquicamata', cliente:'Patricio Urzúa', tipo:'Venta', precio:6800, comision:136, estado:'Cerrada', notas:'' },
+  { id:genId('N'), fecha:'2026-02-28', prop:'Depto Atacama 1234', cliente:'Andrés Fuentes', tipo:'Arriendo', precio:28, comision:28, estado:'Activa', notas:'' },
+  { id:genId('N'), fecha:'2026-02-10', prop:'Oficina Chañarcillo 1020', cliente:'Corp. Minera Ltda.', tipo:'Arriendo', precio:45, comision:45, estado:'Activa', notas:'' },
+];
+const SEED_ACTIVIDADES = [
+  { id:genId('A'), fecha:isoToday(), tipo:'Llamada', descripcion:'Llamada a Andrés Fuentes sobre P001', agente:'Jaime V.' },
+  { id:genId('A'), fecha:isoToday(), tipo:'Visita', descripcion:'Visita programada: Carmen López → P003', agente:'María S.' },
+  { id:genId('A'), fecha:isoToday(), tipo:'Email', descripcion:'Enviada propuesta a Valentina Torres', agente:'Pedro A.' },
+];
+
+// ── BOOTSTRAP: load all data, seed if empty ──────────────────
+async function initDB() {
+  showToast('Conectando con Supabase…', 'info');
+  try {
+    // Load all tables in parallel
+    const [r1,r2,r3,r4,r5] = await Promise.all([
+      db.from('propiedades').select('*').order('created_at', {ascending:false}),
+      db.from('clientes').select('*').order('created_at', {ascending:false}),
+      db.from('visitas').select('*').order('fecha', {ascending:false}),
+      db.from('negocios').select('*').order('fecha', {ascending:false}),
+      db.from('actividades').select('*').order('created_at', {ascending:false}),
+    ]);
+    _props       = r1.data || [];
+    _clientes    = r2.data || [];
+    _contactos   = r3.data || [];
+    _ventas      = r4.data || [];
+    _actividades = r5.data || [];
+
+    // Seed if empty
+    if (_props.length === 0) {
+      showToast('Primera ejecución: cargando datos de ejemplo…', 'info');
+      await Promise.all([
+        db.from('propiedades').insert(SEED_PROPS),
+        db.from('clientes').insert(SEED_CLIENTES),
+        db.from('visitas').insert(SEED_VISITAS),
+        db.from('negocios').insert(SEED_NEGOCIOS),
+        db.from('actividades').insert(SEED_ACTIVIDADES),
+      ]);
+      _props       = SEED_PROPS;
+      _clientes    = SEED_CLIENTES;
+      _contactos   = SEED_VISITAS;
+      _ventas      = SEED_NEGOCIOS;
+      _actividades = SEED_ACTIVIDADES;
+    }
+    showToast('✓ Conectado a Supabase', 'success');
+  } catch(e) {
+    showToast('Error conectando a Supabase: ' + e.message, 'error');
+  }
+}
+
+// ── LIVE DATA ACCESSORS (from cache) ─────────────────────────
+function getPropiedades() { return _props; }
+function getClientes()    { return _clientes; }
+function getContactos()   { return _contactos; }
+function getVentas()      { return _ventas; }
+function getActividades() { return _actividades; }
 
 // ── STATS ───────────────────────────────────────────────────
 function getCrmStats() {
-  const props    = getPropiedades();
-  const clts     = getClientes();
-  const vis      = getContactos();
-  const negos    = getVentas();
-  const activas  = props.filter(p => p.estado !== 'vendida' && p.estado !== 'arrendada').length;
-  const vendidas = props.filter(p => p.estado === 'vendida').length;
-  const comAcum  = negos.reduce((acc, n) => {
-    const m = n.comision.match(/[\d.,]+/);
-    return acc + (m ? parseFloat(m[0].replace(',','.')) : 0);
-  }, 0);
-  return { totalProps: props.length, activas, vendidas, totalClientes: clts.length,
-           totalVisitas: vis.length, visitasPendientes: vis.filter(v=>v.estado==='Pendiente').length,
-           totalNegocios: negos.length, comisionAcum: comAcum.toFixed(0) };
+  const props   = _props;
+  const clts    = _clientes;
+  const vis     = _contactos;
+  const negos   = _ventas;
+  const activas = props.filter(p => p.estado !== 'vendida' && p.estado !== 'arrendada').length;
+  const comAcum = negos.reduce((acc, n) => acc + (parseFloat(n.comision) || 0), 0);
+  return {
+    totalProps: props.length, activas,
+    vendidas: props.filter(p => p.estado === 'vendida').length,
+    totalClientes: clts.length,
+    totalVisitas: vis.length,
+    visitasPendientes: vis.filter(v => v.estado === 'Pendiente').length,
+    totalNegocios: negos.length,
+    comisionAcum: comAcum.toFixed(0)
+  };
 }
 
 // ── CRUD: PROPIEDADES ───────────────────────────────────────
-function savePropCRM(prop) {
-  const data = getPropiedades();
-  const idx = data.findIndex(p => p.id === prop.id);
-  if (idx >= 0) data[idx] = prop; else data.unshift(prop);
-  dbSet(DB_KEYS.props, data);
+async function savePropCRM(prop) {
+  const { error } = await db.from('propiedades').upsert(prop, { onConflict: 'id' });
+  if (error) { showToast('Error guardando propiedad: ' + error.message, 'error'); return; }
+  const idx = _props.findIndex(p => p.id === prop.id);
+  if (idx >= 0) _props[idx] = prop; else _props.unshift(prop);
 }
-function deletePropCRM(id) {
-  dbSet(DB_KEYS.props, getPropiedades().filter(p => p.id !== id));
+async function deletePropCRM(id) {
+  await db.from('propiedades').delete().eq('id', id);
+  _props = _props.filter(p => p.id !== id);
 }
 
 // ── CRUD: CLIENTES ──────────────────────────────────────────
-function saveClienteCRM(cliente) {
-  const data = getClientes();
-  const idx = data.findIndex(c => c.id === cliente.id);
-  if (idx >= 0) data[idx] = cliente; else data.unshift(cliente);
-  dbSet(DB_KEYS.clientes, data);
+async function saveClienteCRM(cliente) {
+  const { error } = await db.from('clientes').upsert(cliente, { onConflict: 'id' });
+  if (error) { showToast('Error guardando cliente: ' + error.message, 'error'); return; }
+  const idx = _clientes.findIndex(c => c.id === cliente.id);
+  if (idx >= 0) _clientes[idx] = cliente; else _clientes.unshift(cliente);
 }
-function deleteClienteCRM(id) {
-  dbSet(DB_KEYS.clientes, getClientes().filter(c => c.id !== id));
+async function deleteClienteCRM(id) {
+  await db.from('clientes').delete().eq('id', id);
+  _clientes = _clientes.filter(c => c.id !== id);
 }
 
-// ── CRUD: VISITAS / CONTACTOS ───────────────────────────────
-function saveContactoCRM(v) {
-  const data = getContactos();
-  const idx = data.findIndex(x => x.id === v.id);
-  if (idx >= 0) data[idx] = v; else data.unshift(v);
-  dbSet(DB_KEYS.contactos, data);
+// ── CRUD: VISITAS ───────────────────────────────────────────
+async function saveContactoCRM(v) {
+  const { error } = await db.from('visitas').upsert(v, { onConflict: 'id' });
+  if (error) { showToast('Error guardando visita: ' + error.message, 'error'); return; }
+  const idx = _contactos.findIndex(x => x.id === v.id);
+  if (idx >= 0) _contactos[idx] = v; else _contactos.unshift(v);
 }
-function updateContactoEstado(id, estado) {
-  const data = getContactos();
-  const item = data.find(v => v.id === id);
-  if (item) { item.estado = estado; dbSet(DB_KEYS.contactos, data); }
+async function updateContactoEstado(id, estado) {
+  await db.from('visitas').update({ estado }).eq('id', id);
+  const item = _contactos.find(v => v.id === id);
+  if (item) item.estado = estado;
 }
 
 // ── CRUD: VENTAS ────────────────────────────────────────────
-function saveVentaCRM(v) {
-  const data = getVentas();
-  const idx = data.findIndex(x => x.id === v.id);
-  if (idx >= 0) data[idx] = v; else data.unshift(v);
-  dbSet(DB_KEYS.ventas, data);
+async function saveVentaCRM(v) {
+  const { error } = await db.from('negocios').upsert(v, { onConflict: 'id' });
+  if (error) { showToast('Error guardando negocio: ' + error.message, 'error'); return; }
+  const idx = _ventas.findIndex(x => x.id === v.id);
+  if (idx >= 0) _ventas[idx] = v; else _ventas.unshift(v);
 }
 
 // ── CRUD: ACTIVIDADES ───────────────────────────────────────
-function logActividad(tipo, descripcion, agente) {
-  const data = getActividades();
-  data.unshift({ id: genId('A'), fecha: today(), tipo, descripcion, agente: agente || 'Sistema' });
-  if (data.length > 100) data.length = 100; // cap at 100
-  dbSet(DB_KEYS.actividades, data);
+async function logActividad(tipo, descripcion, agente) {
+  const act = { id: genId('A'), fecha: isoToday(), tipo, descripcion, agente: agente || 'Sistema' };
+  await db.from('actividades').insert(act);
+  _actividades.unshift(act);
+  if (_actividades.length > 100) _actividades.length = 100;
 }
 
 // ── EXPORT / IMPORT DB ──────────────────────────────────────
 function exportCrmDB() {
   const dump = {
-    meta: dbMeta(),
-    propiedades: getPropiedades(),
-    clientes: getClientes(),
-    contactos: getContactos(),
-    ventas: getVentas(),
-    actividades: getActividades(),
+    propiedades: _props, clientes: _clientes, contactos: _contactos,
+    ventas: _ventas, actividades: _actividades,
     exportedAt: new Date().toISOString()
   };
   const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `coppergi-crm-backup-${today().replace(/\//g,'-')}.json`;
+  a.download = `coppergi-crm-backup-${isoToday()}.json`;
   a.click();
   showToast('Base de datos exportada ✓', 'success');
 }
@@ -1432,40 +1454,39 @@ function importCrmDB(input) {
   const file = input.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = async e => {
     try {
       const d = JSON.parse(e.target.result);
-      if (d.propiedades) dbSet(DB_KEYS.props, d.propiedades);
-      if (d.clientes)    dbSet(DB_KEYS.clientes, d.clientes);
-      if (d.contactos)   dbSet(DB_KEYS.contactos, d.contactos);
-      if (d.ventas)      dbSet(DB_KEYS.ventas, d.ventas);
-      if (d.actividades) dbSet(DB_KEYS.actividades, d.actividades);
+      if (d.propiedades) { await db.from('propiedades').upsert(d.propiedades, {onConflict:'id'}); _props = d.propiedades; }
+      if (d.clientes)    { await db.from('clientes').upsert(d.clientes, {onConflict:'id'}); _clientes = d.clientes; }
+      if (d.contactos)   { await db.from('visitas').upsert(d.contactos, {onConflict:'id'}); _contactos = d.contactos; }
+      if (d.ventas)      { await db.from('negocios').upsert(d.ventas, {onConflict:'id'}); _ventas = d.ventas; }
+      if (d.actividades) { await db.from('actividades').upsert(d.actividades, {onConflict:'id'}); _actividades = d.actividades; }
       reloadAll();
       showToast(`Importados: ${(d.propiedades||[]).length} propiedades, ${(d.clientes||[]).length} clientes ✓`, 'success');
-    } catch { showToast('Error al importar archivo', 'error'); }
+    } catch(err) { showToast('Error al importar: ' + err.message, 'error'); }
   };
   reader.readAsText(file);
 }
 
-function clearCrmDB() {
-  if (!confirm('¿Borrar TODOS los datos? Esta acción no se puede deshacer.')) return;
-  Object.values(DB_KEYS).forEach(k => localStorage.removeItem(k));
-  dbSeedIfEmpty();
+async function clearCrmDB() {
+  if (!confirm('¿Borrar TODOS los datos locales y recargar desde Supabase?')) return;
+  await initDB();
   reloadAll();
-  showToast('Base de datos reiniciada con datos de ejemplo', 'info');
+  showToast('Datos recargados desde Supabase ✓', 'info');
 }
 
-function reloadAll() {
+async function reloadAll() {
+  await initDB();
   renderPropiedades();
   renderClientes();
   renderContactos();
   renderVentas();
   updateDashboardStats();
+  populateModalSelects();
 }
 
-// ── compat shims for existing render functions ──────────────
-// The render functions below reference these as live arrays;
-// we now delegate to DB getters instead.
+// ── compat shims ─────────────────────────────────────────────
 Object.defineProperty(window, 'propiedades', { get: getPropiedades, configurable: true });
 Object.defineProperty(window, 'clientes',    { get: getClientes,    configurable: true });
 Object.defineProperty(window, 'contactos',   { get: getContactos,   configurable: true });
@@ -1478,6 +1499,14 @@ const docs = [
 ];
 
 // ── RENDER ──
+function fmtPrecio(p) {
+  if (!p.precio && p.precio !== 0) return '–';
+  const mon = p.moneda || 'UF';
+  const num = parseFloat(p.precio).toLocaleString('es-CL');
+  const suf = (p.estado === 'arriendo') ? '/mes' : '';
+  return `${mon} ${num}${suf}`;
+}
+
 function renderPropiedades() {
   const tbody = document.getElementById('propiedades-tbody');
   tbody.innerHTML = propiedades.map(p => `
@@ -1486,11 +1515,11 @@ function renderPropiedades() {
       <td>${p.dir}</td>
       <td>${p.tipo}</td>
       <td><span class="status-badge status-${p.estado}">${p.estado.charAt(0).toUpperCase()+p.estado.slice(1)}</span></td>
-      <td class="prop-price">${p.precio}</td>
-      <td>${p.m2}</td>
-      <td>${p.dorms}</td>
-      <td>${p.banos}</td>
-      <td>${p.cap}</td>
+      <td class="prop-price">${fmtPrecio(p)}</td>
+      <td>${p.m2 || '–'}</td>
+      <td>${p.dorms || '–'}</td>
+      <td>${p.banos || '–'}</td>
+      <td>${p.cap || '–'}</td>
       <td>
         <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px" onclick="showToast('Abriendo propiedad '+${JSON.stringify(p.id)},'info')">Ver</button>
         <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;margin-left:4px" onclick="showToast('Editando propiedad','info')">Editar</button>
@@ -1521,7 +1550,7 @@ function renderContactos() {
   const estadoText = {Pendiente:'#e65100',Confirmada:'#2e7d32',Realizada:'#1565c0',Cancelada:'#c62828'};
   tbody.innerHTML = contactos.map(c => `
     <tr>
-      <td>${c.fecha}</td>
+      <td>${clDate(c.fecha)}</td>
       <td>${c.cliente}</td>
       <td>${c.propiedad}</td>
       <td>${c.origen}</td>
@@ -1536,12 +1565,12 @@ function renderVentas() {
   const tbody = document.getElementById('ventas-tbody');
   tbody.innerHTML = ventas.map(v => `
     <tr>
-      <td>${v.fecha}</td>
+      <td>${clDate(v.fecha)}</td>
       <td>${v.prop}</td>
       <td>${v.cliente}</td>
       <td>${v.tipo}</td>
-      <td class="prop-price">${v.precio}</td>
-      <td style="color:#43a047;font-weight:700">${v.comision}</td>
+      <td class="prop-price">UF ${parseFloat(v.precio||0).toLocaleString('es-CL')}</td>
+      <td style="color:#43a047;font-weight:700">UF ${parseFloat(v.comision||0).toLocaleString('es-CL')}</td>
       <td><span class="status-badge" style="background:${v.estado==='Cerrada'?'#e8f5e9':'#e3f2fd'};color:${v.estado==='Cerrada'?'#2e7d32':'#1565c0'}">${v.estado}</span></td>
     </tr>
   `).join('');
@@ -1653,7 +1682,7 @@ function setComentTab(el) {
 }
 
 // ── ADD / SAVE RECORDS ──────────────────────────────────────
-function addPropiedad() {
+async function addPropiedad() {
   const get = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
   const dir = get('p-dir');
   if (!dir) { showToast('Ingresa la dirección de la propiedad', 'error'); return; }
@@ -1662,25 +1691,25 @@ function addPropiedad() {
     dir,
     tipo: get('p-tipo') || 'Casa',
     estado: get('p-estado') || 'venta',
-    precio: (get('p-moneda') || 'UF') + ' ' + (get('p-precio') || '0'),
-    m2: get('p-m2') || '–',
-    dorms: get('p-dorms') || '–',
-    banos: get('p-banos') || '–',
+    moneda: get('p-moneda') || 'UF',
+    precio: parseFloat(get('p-precio')) || 0,
+    m2: parseFloat(get('p-m2')) || null,
+    dorms: parseInt(get('p-dorms')) || null,
+    banos: parseInt(get('p-banos')) || null,
     cap: get('p-cap') || 'Jaime V.',
-    fecha: today(),
+    fecha: isoToday(),
     notas: get('p-notas') || ''
   };
-  savePropCRM(prop);
-  logActividad('Captación', `Nueva propiedad: ${prop.dir}`, prop.cap);
+  await savePropCRM(prop);
+  await logActividad('Captación', `Nueva propiedad: ${prop.dir}`, prop.cap);
   renderPropiedades();
   updateDashboardStats();
   showToast('Propiedad guardada exitosamente ✓', 'success');
   closeModal('modal-propiedad');
-  // clear form
   ['p-dir','p-m2','p-precio','p-dorms','p-banos','p-notas'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
 }
 
-function addCliente() {
+async function addCliente() {
   const nombre  = document.getElementById('c-nombre').value.trim() || 'Nuevo';
   const apellido= document.getElementById('c-apellido').value.trim() || 'Cliente';
   const email   = document.getElementById('c-email').value.trim() || '';
@@ -1690,12 +1719,13 @@ function addCliente() {
   const cliente = {
     id: genId('C'),
     nombre: nombre + ' ' + apellido,
+    apellido: '',
     email, tel, tipo,
-    presupuesto: '', sector: '', notas: '',
-    fecha: today()
+    presupuesto: null, sector: '', notas: '',
+    fecha: isoToday()
   };
-  saveClienteCRM(cliente);
-  logActividad('Cliente', `Nuevo cliente: ${cliente.nombre} (${tipo})`, 'Sistema');
+  await saveClienteCRM(cliente);
+  await logActividad('Cliente', `Nuevo cliente: ${cliente.nombre} (${tipo})`, 'Sistema');
   renderClientes();
   updateDashboardStats();
   showToast('Cliente ' + cliente.nombre + ' agregado ✓', 'success');
@@ -1703,47 +1733,46 @@ function addCliente() {
   ['c-nombre','c-apellido','c-email','c-tel'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
 }
 
-function addVisita() {
+async function addVisita() {
   const cliente   = document.getElementById('v-cliente')?.value || '';
   const propiedad = document.getElementById('v-propiedad')?.value || '';
-  const fecha     = document.getElementById('v-fecha')?.value || today();
+  const fecha     = document.getElementById('v-fecha')?.value || isoToday();
   const hora      = document.getElementById('v-hora')?.value || '';
   const origen    = document.getElementById('v-origen')?.value || 'Web';
   if (!cliente) { showToast('Selecciona un cliente', 'error'); return; }
   const visita = {
     id: genId('V'),
-    fecha: fecha ? new Date(fecha).toLocaleDateString('es-CL') : today(),
+    fecha: fecha || isoToday(),
     hora, cliente, propiedad, origen,
     estado: 'Pendiente',
     agente: 'Jaime V.',
     notas: ''
   };
-  saveContactoCRM(visita);
-  logActividad('Visita', `Visita agendada: ${cliente} → ${propiedad}`, 'Jaime V.');
+  await saveContactoCRM(visita);
+  await logActividad('Visita', `Visita agendada: ${cliente} → ${propiedad}`, 'Jaime V.');
   renderContactos();
   updateDashboardStats();
   showToast('Visita registrada exitosamente ✓', 'success');
   closeModal('modal-visita');
 }
 
-function addVenta() {
+async function addVenta() {
   const prop     = document.getElementById('vt-prop')?.value || '';
   const cliente  = document.getElementById('vt-cliente')?.value || '';
   const tipo     = document.getElementById('vt-tipo')?.value || 'Venta';
-  const precio   = document.getElementById('vt-precio')?.value || '0';
-  const comision = document.getElementById('vt-comision')?.value || '0';
+  const precio   = parseFloat(document.getElementById('vt-precio')?.value) || 0;
+  const comision = parseFloat(document.getElementById('vt-comision')?.value) || 0;
   if (!prop || !cliente) { showToast('Completa los campos requeridos', 'error'); return; }
   const venta = {
     id: genId('N'),
-    fecha: today(),
+    fecha: isoToday(),
     prop, cliente, tipo,
-    precio: 'UF ' + precio,
-    comision: 'UF ' + comision,
+    precio, comision,
     estado: 'Activa',
     notas: ''
   };
-  saveVentaCRM(venta);
-  logActividad('Negocio', `Nuevo negocio: ${prop} con ${cliente}`, 'Jaime V.');
+  await saveVentaCRM(venta);
+  await logActividad('Negocio', `Nuevo negocio: ${prop} con ${cliente}`, 'Jaime V.');
   renderVentas();
   updateDashboardStats();
   showToast('Negocio registrado ✓', 'success');
@@ -1786,21 +1815,22 @@ function updateDate() {
     `${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]} de ${now.getFullYear()}`;
 }
 
-// ── DB TOOLBAR (Limpiar BD button wire-up) ──────────────────
-// Override the existing clearDB call to use our new engine
+// ── DB TOOLBAR ───────────────────────────────────────────────
 window.clearDB = clearCrmDB;
 
 // ── INIT ────────────────────────────────────────────────────
-dbSeedIfEmpty();          // populate DB on first run
-renderPropiedades();
-renderClientes();
-renderContactos();
-renderVentas();
-renderDocs();
-updateDate();
-updateDashboardStats();
-initCharts();
-populateModalSelects();
+(async () => {
+  updateDate();
+  initCharts();
+  renderDocs();
+  await initDB();
+  renderPropiedades();
+  renderClientes();
+  renderContactos();
+  renderVentas();
+  updateDashboardStats();
+  populateModalSelects();
+})();
 </script>
 </body>
 </html>

@@ -754,6 +754,7 @@ mark{background:#fde8dc;color:var(--copper-dark);border-radius:2px;padding:0 2px
   .form-grid,.form-grid-3{grid-template-columns:1fr}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -2365,39 +2366,40 @@ function fsboRenderReview(){
   document.getElementById('fsbo-review-content').innerHTML = reviewHtml;
 }
 
-function fsboSubmit(){
+// Supabase client for FSBO submissions
+const _supa = supabase.createClient(
+  'https://xcpyokvymafndlkyycmn.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjcHlva3Z5bWFmbmRsa3l5Y21uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MjQwNDEsImV4cCI6MjA5MTEwMDA0MX0.zyOjymuuqXXB7XChu0dB04YzmnsIRa9gp8oMuHG76h0'
+);
+
+async function fsboSubmit(){
   fsboCollect();
   const d = fsboData;
-  const newProp = {
+  const codigo = 'PDO-'+Math.floor(Math.random()*9000+1000);
+  const listing = {
     id: 'fsbo-'+Date.now(),
-    codigo: 'PDO-'+Math.floor(Math.random()*9000+1000),
-    titulo: d.titulo || `${d.tipo||'Propiedad'} en ${d.sector||d.ciudad||'Copiapó'}`,
-    tipo: d.tipo||'Casa',
-    operacion: d.operacion||'venta',
-    precio: `${d.moneda||'UF'} ${d.precio}`,
-    direccion: d.direccion,
-    sector: d.sector||'',
-    ciudad: d.ciudad||'Copiapó',
-    dorms: parseInt(d.dorms)||0,
-    banos: parseInt(d.banos)||0,
-    estac: parseInt(d.estac)||0,
-    m2util: parseInt(d.m2util)||0,
-    m2total: parseInt(d.m2total)||0,
-    antiguedad: d.antiguedad||'',
-    desc: d.desc||'',
-    tags: d.tags||'',
-    imagenes: fsboPhotos.join(','),
-    estado: 'pendiente',
-    destacada: false,
-    esFSBO: true,
-    contactoFSBO: { nombre: d.nombre, tel: d.tel, email: d.email, horario: d.horario },
-    fecha: new Date().toISOString()
+    tipo_op: d.operacion || 'venta',
+    tipo_prop: d.tipo || 'Casa',
+    dir: d.direccion || '',
+    ciudad: d.ciudad || 'Copiapó',
+    region: 'Atacama',
+    m2: parseFloat(d.m2util) || null,
+    dorms: parseInt(d.dorms) || 0,
+    banos: parseInt(d.banos) || 0,
+    precio: parseFloat(d.precio) || null,
+    moneda: d.moneda || 'UF',
+    descripcion: d.desc || '',
+    nombre: d.nombre || '',
+    email: d.email || '',
+    tel: d.tel || '',
+    estado: 'pendiente'
   };
-  const props = getProps();
-  props.unshift(newProp);
-  saveProps(props);
+  try {
+    const { error } = await _supa.from('fsbo_listings').insert(listing);
+    if (error) console.warn('Supabase FSBO error:', error.message);
+  } catch(e) { console.warn('FSBO submit error:', e); }
   showPage('page-fsbo-success');
-  document.getElementById('fsbo-success-code').textContent = newProp.codigo;
+  document.getElementById('fsbo-success-code').textContent = codigo;
 }
 
 function fsboHandlePhotos(input){
