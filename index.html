@@ -788,6 +788,7 @@ mark{background:#fde8dc;color:var(--copper-dark);border-radius:2px;padding:0 2px
         <a href="https://facebook.com" target="_blank">f</a>
         <a href="https://instagram.com" target="_blank">ig</a>
       </div>
+      <button class="nav-btn" style="background:#1a6b3c;margin-right:6px" onclick="showFsboPage()">🏷️ Publicar Gratis</button>
       <button class="nav-btn" onclick="showPage('page-admin-login')">Admin</button>
     </nav>
   </header>
@@ -884,6 +885,23 @@ mark{background:#fde8dc;color:var(--copper-dark);border-radius:2px;padding:0 2px
       <!-- Populated by JS -->
     </div>
     <div class="pagination" id="pagination"></div>
+  </section>
+
+  <!-- FSBO Banner -->
+  <section style="background:linear-gradient(135deg,#1a1a2e,#2d0f05);padding:40px;text-align:center">
+    <div style="max-width:680px;margin:0 auto">
+      <div style="color:var(--copper-light);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">¿Eres dueño?</div>
+      <h2 style="color:#fff;font-size:28px;font-weight:700;margin-bottom:10px">Publica tu propiedad <span style="color:var(--copper-light)">gratis</span> en minutos</h2>
+      <p style="color:rgba(255,255,255,.7);font-size:15px;margin-bottom:24px">Sin comisiones ocultas. Llega a miles de compradores e interesados en Copiapó y la Región de Atacama.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <button onclick="showFsboPage()" style="background:var(--copper);color:#fff;border:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer">🏷️ Publicar por Dueño</button>
+        <div style="display:flex;gap:24px;align-items:center">
+          <span style="color:rgba(255,255,255,.7);font-size:13px">✓ Gratis</span>
+          <span style="color:rgba(255,255,255,.7);font-size:13px">✓ Rápido</span>
+          <span style="color:rgba(255,255,255,.7);font-size:13px">✓ Sin comisión</span>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- Why Us -->
@@ -2005,6 +2023,977 @@ function showToast(msg,type='info'){
 // ═══════════════════════════════════════════════
 seedData();
 renderPublicGrid();
+
+// ═══════════════════════════════════════════════
+//  FSBO — PUBLICAR POR DUEÑO
+// ═══════════════════════════════════════════════
+const FSBO_STEPS = ['Dirección','Precio','Fotos','Descripción','Datos','Contacto','Revisar'];
+let fsboStep = 0;
+let fsboData = {};
+let fsboPhotos = [];
+
+function showFsboPage(){
+  fsboStep = 0;
+  fsboData = {};
+  fsboPhotos = [];
+  showPage('page-fsbo');
+  fsboRender();
+}
+
+function fsboRender(){
+  // Progress bar
+  const prog = document.getElementById('fsbo-progress');
+  const pct = Math.round(((fsboStep) / (FSBO_STEPS.length - 1)) * 100);
+  prog.style.width = pct + '%';
+
+  // Step labels
+  document.querySelectorAll('.fsbo-step-dot').forEach((el,i)=>{
+    el.classList.toggle('done', i < fsboStep);
+    el.classList.toggle('active', i === fsboStep);
+    el.classList.remove('done');
+    if(i < fsboStep) el.classList.add('done');
+    if(i === fsboStep) el.classList.add('active');
+  });
+
+  // Show correct panel
+  document.querySelectorAll('.fsbo-panel').forEach((el,i)=>{
+    el.classList.toggle('active', i === fsboStep);
+  });
+
+  // Nav buttons
+  document.getElementById('fsbo-btn-back').style.display = fsboStep === 0 ? 'none' : 'flex';
+  const nextBtn = document.getElementById('fsbo-btn-next');
+  if(fsboStep === FSBO_STEPS.length - 1){
+    nextBtn.textContent = '✓ Publicar Propiedad';
+    nextBtn.style.background = '#1a6b3c';
+  } else {
+    nextBtn.textContent = 'Continuar →';
+    nextBtn.style.background = '';
+  }
+
+  // If review step populate summary
+  if(fsboStep === 6) fsboRenderReview();
+}
+
+function fsboNext(){
+  if(!fsboValidateStep()) return;
+  fsboCollect();
+  if(fsboStep === FSBO_STEPS.length - 1){
+    fsboSubmit(); return;
+  }
+  fsboStep++;
+  fsboRender();
+  document.getElementById('fsbo-wizard').scrollTo({top:0,behavior:'smooth'});
+}
+
+function fsboBack(){
+  if(fsboStep > 0){ fsboStep--; fsboRender(); }
+}
+
+function fsboValidateStep(){
+  const errs = {
+    0: ()=>document.getElementById('fsbo-direccion').value.trim().length > 3,
+    1: ()=>document.getElementById('fsbo-precio').value.trim() !== '',
+    2: ()=>true,
+    3: ()=>document.getElementById('fsbo-desc').value.trim().length > 10,
+    4: ()=>document.getElementById('fsbo-tipo').value !== '',
+    5: ()=>{
+      const n=document.getElementById('fsbo-nombre').value.trim();
+      const t=document.getElementById('fsbo-tel').value.trim();
+      return n.length>1 && t.length>6;
+    },
+    6: ()=>true
+  };
+  const ok = errs[fsboStep] ? errs[fsboStep]() : true;
+  if(!ok){
+    document.getElementById('fsbo-err').style.display='block';
+    setTimeout(()=>document.getElementById('fsbo-err').style.display='none',3000);
+  }
+  return ok;
+}
+
+function fsboCollect(){
+  const get = id => { const el=document.getElementById(id); return el?el.value:''; };
+  Object.assign(fsboData, {
+    direccion: get('fsbo-direccion'), sector: get('fsbo-sector'), ciudad: get('fsbo-ciudad'),
+    precio: get('fsbo-precio'), moneda: get('fsbo-moneda'), operacion: get('fsbo-operacion'),
+    desc: get('fsbo-desc'), titulo: get('fsbo-titulo-custom'),
+    tipo: get('fsbo-tipo'), dorms: get('fsbo-dorms'), banos: get('fsbo-banos'),
+    m2util: get('fsbo-m2util'), m2total: get('fsbo-m2total'), estac: get('fsbo-estac'),
+    antiguedad: get('fsbo-antiguedad'), tags: get('fsbo-tags-input'),
+    nombre: get('fsbo-nombre'), tel: get('fsbo-tel'), email: get('fsbo-email'),
+    horario: get('fsbo-horario'),
+    photos: fsboPhotos
+  });
+}
+
+function fsboRenderReview(){
+  const d = fsboData;
+  const reviewHtml = `
+    <div class="fsbo-review-block">
+      <div class="fsbo-review-row"><span class="fsbo-rv-label">📍 Dirección</span><span>${d.direccion||'-'}</span></div>
+      <div class="fsbo-review-row"><span class="fsbo-rv-label">🏘️ Sector</span><span>${d.sector||'-'}, ${d.ciudad||'Copiapó'}</span></div>
+    </div>
+    <div class="fsbo-review-block">
+      <div class="fsbo-review-row"><span class="fsbo-rv-label">💰 Precio</span><span style="font-weight:700;color:var(--copper)">${d.moneda||'UF'} ${d.precio||'-'}</span></div>
+      <div class="fsbo-review-row"><span class="fsbo-rv-label">🔄 Operación</span><span>${(d.operacion||'venta').charAt(0).toUpperCase()+(d.operacion||'venta').slice(1)}</span></div>
+    </div>
+    <div class="fsbo-review-block">
+      <div class="fsbo-review-row"><span class="fsbo-rv-label">🏠 Tipo</span><span>${d.tipo||'-'}</span></div>
+      <div class="fsbo-review-row"><span class="fsbo-rv-label">🛏️ Dormitorios</span><span>${d.dorms||'-'}</span></div>
+      <div class="fsbo-review-row"><span class="fsbo-rv-label">🚿 Baños</span><span>${d.banos||'-'}</span></div>
+      <div class="fsbo-review-row"><span class="fsbo-rv-label">📐 Superficie útil</span><span>${d.m2util||'-'} m²</span></div>
+    </div>
+    <div class="fsbo-review-block">
+      <div class="fsbo-review-row"><span class="fsbo-rv-label">📷 Fotos</span><span>${fsboPhotos.length} foto(s) cargada(s)</span></div>
+    </div>
+    <div class="fsbo-review-block">
+      <div class="fsbo-review-row"><span class="fsbo-rv-label">👤 Contacto</span><span>${d.nombre||'-'}</span></div>
+      <div class="fsbo-review-row"><span class="fsbo-rv-label">📞 Teléfono</span><span>${d.tel||'-'}</span></div>
+      <div class="fsbo-review-row"><span class="fsbo-rv-label">✉️ Email</span><span>${d.email||'-'}</span></div>
+    </div>
+  `;
+  document.getElementById('fsbo-review-content').innerHTML = reviewHtml;
+}
+
+function fsboSubmit(){
+  fsboCollect();
+  const d = fsboData;
+  const newProp = {
+    id: 'fsbo-'+Date.now(),
+    codigo: 'PDO-'+Math.floor(Math.random()*9000+1000),
+    titulo: d.titulo || `${d.tipo||'Propiedad'} en ${d.sector||d.ciudad||'Copiapó'}`,
+    tipo: d.tipo||'Casa',
+    operacion: d.operacion||'venta',
+    precio: `${d.moneda||'UF'} ${d.precio}`,
+    direccion: d.direccion,
+    sector: d.sector||'',
+    ciudad: d.ciudad||'Copiapó',
+    dorms: parseInt(d.dorms)||0,
+    banos: parseInt(d.banos)||0,
+    estac: parseInt(d.estac)||0,
+    m2util: parseInt(d.m2util)||0,
+    m2total: parseInt(d.m2total)||0,
+    antiguedad: d.antiguedad||'',
+    desc: d.desc||'',
+    tags: d.tags||'',
+    imagenes: fsboPhotos.join(','),
+    estado: 'pendiente',
+    destacada: false,
+    esFSBO: true,
+    contactoFSBO: { nombre: d.nombre, tel: d.tel, email: d.email, horario: d.horario },
+    fecha: new Date().toISOString()
+  };
+  const props = getProps();
+  props.unshift(newProp);
+  saveProps(props);
+  showPage('page-fsbo-success');
+  document.getElementById('fsbo-success-code').textContent = newProp.codigo;
+}
+
+function fsboHandlePhotos(input){
+  const files = Array.from(input.files);
+  files.forEach(file=>{
+    const reader = new FileReader();
+    reader.onload = e => {
+      fsboPhotos.push(e.target.result);
+      fsboRenderPhotoGrid();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function fsboRenderPhotoGrid(){
+  const grid = document.getElementById('fsbo-photo-grid');
+  grid.innerHTML = fsboPhotos.map((src,i)=>`
+    <div class="fsbo-photo-thumb" style="position:relative">
+      <img src="${src}" style="width:100%;height:100px;object-fit:cover;border-radius:8px">
+      <button onclick="fsboRemovePhoto(${i})" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer">✕</button>
+      ${i===0?'<div style="position:absolute;bottom:4px;left:4px;background:var(--copper);color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600">PORTADA</div>':''}
+    </div>
+  `).join('');
+  document.getElementById('fsbo-photo-count').textContent = fsboPhotos.length + ' foto(s)';
+}
+
+function fsboRemovePhoto(idx){
+  fsboPhotos.splice(idx,1);
+  fsboRenderPhotoGrid();
+}
+
+// Nav link in header
+function showFsboFromNav(){ showFsboPage(); }
+</script>
+
+<!-- ══════════════════ FSBO STYLES ══════════════════ -->
+<style>
+/* FSBO page wrapper */
+#page-fsbo, #page-fsbo-success { background:#f4f6f9; min-height:100vh; }
+
+/* FSBO Header */
+.fsbo-header {
+  background:#fff;
+  border-bottom:2px solid var(--copper);
+  padding:0 0;
+  position:sticky;top:0;z-index:200;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.fsbo-header-inner {
+  max-width:880px;margin:0 auto;
+  padding:16px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.fsbo-header .logo-mini {
+  display:flex;align-items:center;gap:10px;cursor:pointer;
+}
+.fsbo-header .logo-mini .icon {
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--copper-dark),var(--copper-light));
+  color:#fff;font-size:18px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+}
+.fsbo-header .logo-mini .brand { font-size:15px;font-weight:700;color:var(--dark); }
+.fsbo-header .logo-mini .sub { font-size:11px;color:var(--muted); }
+.fsbo-back-link {
+  font-size:13px;color:var(--muted);cursor:pointer;
+  display:flex;align-items:center;gap:4px;
+}
+.fsbo-back-link:hover{color:var(--copper)}
+
+/* Progress bar */
+.fsbo-progress-wrap {
+  background:#e8e8e8;
+  height:4px;
+  position:relative;
+}
+.fsbo-progress-bar {
+  height:4px;background:var(--copper);
+  transition:width .4s ease;
+  width:0%;
+}
+
+/* Step indicator */
+.fsbo-stepper {
+  max-width:880px;margin:0 auto;
+  padding:20px 24px 0;
+  display:flex;align-items:center;gap:0;
+  overflow-x:auto;
+}
+.fsbo-step-item {
+  display:flex;flex-direction:column;align-items:center;
+  flex:1;min-width:70px;
+  cursor:default;
+  position:relative;
+}
+.fsbo-step-item:not(:last-child)::after {
+  content:'';position:absolute;top:14px;left:50%;right:-50%;
+  height:2px;background:#ddd;z-index:0;
+}
+.fsbo-step-dot {
+  width:28px;height:28px;border-radius:50%;
+  background:#ddd;color:#999;
+  font-size:12px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:1;
+  transition:all .3s;border:2px solid #ddd;
+}
+.fsbo-step-dot.active {
+  background:var(--copper);color:#fff;border-color:var(--copper);
+  box-shadow:0 0 0 4px rgba(181,69,27,.15);
+}
+.fsbo-step-dot.done {
+  background:var(--copper);color:#fff;border-color:var(--copper);
+}
+.fsbo-step-label {
+  font-size:10px;color:#999;margin-top:5px;text-align:center;
+  font-weight:600;letter-spacing:.3px;white-space:nowrap;
+}
+.fsbo-step-item .fsbo-step-dot.active + .fsbo-step-label,
+.fsbo-step-item .fsbo-step-dot.done + .fsbo-step-label {
+  color:var(--copper);
+}
+
+/* Main wizard container */
+.fsbo-wizard {
+  max-width:880px;margin:24px auto 40px;
+  padding:0 24px;
+  min-height:60vh;
+}
+.fsbo-panel { display:none; }
+.fsbo-panel.active { display:block; animation:fadeIn .25s ease; }
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Card */
+.fsbo-card {
+  background:#fff;border-radius:12px;
+  box-shadow:0 2px 12px rgba(0,0,0,.07);
+  padding:32px 36px;
+  margin-bottom:16px;
+}
+.fsbo-card-title {
+  font-size:22px;font-weight:700;color:var(--dark);
+  margin-bottom:6px;
+}
+.fsbo-card-sub {
+  font-size:14px;color:var(--muted);
+  margin-bottom:28px;
+}
+
+/* Form fields */
+.fsbo-field { margin-bottom:20px; }
+.fsbo-label {
+  display:block;font-size:13px;font-weight:600;
+  color:var(--text);margin-bottom:6px;
+}
+.fsbo-input, .fsbo-select, .fsbo-textarea {
+  width:100%;padding:12px 14px;
+  border:1.5px solid var(--border);border-radius:8px;
+  font-size:15px;color:var(--text);
+  transition:border-color .2s,box-shadow .2s;
+  background:#fff;
+}
+.fsbo-input:focus,.fsbo-select:focus,.fsbo-textarea:focus {
+  outline:none;border-color:var(--copper);
+  box-shadow:0 0 0 3px rgba(181,69,27,.08);
+}
+.fsbo-textarea { min-height:120px;resize:vertical;line-height:1.6; }
+.fsbo-hint { font-size:12px;color:var(--muted);margin-top:4px; }
+.fsbo-row { display:grid;grid-template-columns:1fr 1fr;gap:16px; }
+.fsbo-row-3 { display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px; }
+
+/* Price input */
+.fsbo-price-wrap {
+  display:flex;gap:0;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;
+  transition:border-color .2s,box-shadow .2s;
+}
+.fsbo-price-wrap:focus-within {
+  border-color:var(--copper);box-shadow:0 0 0 3px rgba(181,69,27,.08);
+}
+.fsbo-price-prefix {
+  background:#f5f5f5;padding:12px 14px;
+  font-size:14px;font-weight:600;color:var(--muted);
+  border-right:1.5px solid var(--border);
+  white-space:nowrap;display:flex;align-items:center;
+}
+.fsbo-price-input {
+  flex:1;border:none;outline:none;
+  padding:12px 14px;font-size:18px;font-weight:700;color:var(--dark);
+}
+.fsbo-price-suffix {
+  background:#f5f5f5;padding:12px 14px;
+  font-size:13px;color:var(--muted);
+  border-left:1.5px solid var(--border);
+  display:flex;align-items:center;gap:6px;
+}
+
+/* Zestimate-style estimate */
+.fsbo-estimate-box {
+  background:linear-gradient(135deg,#fff8f5,#fdeee6);
+  border:1.5px solid rgba(181,69,27,.2);
+  border-radius:10px;padding:16px 20px;
+  margin-top:16px;
+  display:flex;align-items:center;gap:14px;
+}
+.fsbo-estimate-icon { font-size:28px; }
+.fsbo-estimate-text .title { font-size:13px;font-weight:700;color:var(--copper); }
+.fsbo-estimate-text .value { font-size:20px;font-weight:800;color:var(--dark); }
+.fsbo-estimate-text .sub { font-size:12px;color:var(--muted); }
+
+/* Photo upload zone */
+.fsbo-upload-zone {
+  border:2px dashed var(--border);
+  border-radius:12px;padding:40px 20px;
+  text-align:center;cursor:pointer;
+  transition:all .2s;background:#fafafa;
+}
+.fsbo-upload-zone:hover,.fsbo-upload-zone.drag-over {
+  border-color:var(--copper);background:#fff8f5;
+}
+.fsbo-upload-icon { font-size:40px;margin-bottom:10px; }
+.fsbo-upload-title { font-size:16px;font-weight:700;color:var(--dark);margin-bottom:4px; }
+.fsbo-upload-sub { font-size:13px;color:var(--muted);margin-bottom:14px; }
+.fsbo-upload-btn {
+  background:var(--copper);color:#fff;
+  border:none;padding:10px 24px;border-radius:6px;
+  font-size:14px;font-weight:600;cursor:pointer;
+}
+.fsbo-upload-btn:hover{background:var(--copper-dark)}
+.fsbo-photo-grid {
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:10px;margin-top:16px;
+}
+
+/* Tips box */
+.fsbo-tip-box {
+  background:#f0f7ff;border-left:4px solid #006aff;
+  border-radius:0 8px 8px 0;padding:14px 18px;
+  margin-bottom:16px;
+}
+.fsbo-tip-box .tip-title { font-size:13px;font-weight:700;color:#006aff;margin-bottom:4px; }
+.fsbo-tip-box li { font-size:13px;color:var(--text);margin:3px 0;padding-left:4px; }
+
+/* Review blocks */
+.fsbo-review-block {
+  background:#fff;border:1px solid var(--border);
+  border-radius:10px;padding:18px 20px;margin-bottom:12px;
+}
+.fsbo-review-row {
+  display:flex;justify-content:space-between;align-items:center;
+  padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:14px;
+}
+.fsbo-review-row:last-child{border-bottom:none}
+.fsbo-rv-label { color:var(--muted);font-weight:600;min-width:130px; }
+
+/* Terms */
+.fsbo-terms {
+  display:flex;align-items:flex-start;gap:10px;
+  background:#f9f9f9;padding:16px;border-radius:8px;
+  margin-top:16px;
+}
+.fsbo-terms input[type=checkbox]{width:18px;height:18px;accent-color:var(--copper);flex-shrink:0;margin-top:2px;}
+.fsbo-terms label{font-size:13px;color:var(--muted);line-height:1.5}
+.fsbo-terms a{color:var(--copper)}
+
+/* Bottom nav bar */
+.fsbo-footer-nav {
+  position:sticky;bottom:0;z-index:100;
+  background:#fff;border-top:1px solid var(--border);
+  box-shadow:0 -4px 16px rgba(0,0,0,.07);
+}
+.fsbo-footer-inner {
+  max-width:880px;margin:0 auto;
+  padding:16px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.fsbo-btn-back {
+  display:flex;align-items:center;gap:6px;
+  padding:12px 22px;border-radius:8px;
+  border:2px solid var(--border);background:#fff;
+  font-size:15px;font-weight:600;color:var(--text);cursor:pointer;
+  transition:all .2s;
+}
+.fsbo-btn-back:hover{border-color:var(--copper);color:var(--copper)}
+.fsbo-btn-next {
+  display:flex;align-items:center;gap:6px;
+  padding:13px 32px;border-radius:8px;
+  border:none;background:var(--copper);
+  font-size:15px;font-weight:700;color:#fff;cursor:pointer;
+  transition:background .2s;
+}
+.fsbo-btn-next:hover{background:var(--copper-dark)}
+.fsbo-err-msg {
+  background:#fce4e4;color:#c62828;
+  padding:8px 16px;border-radius:6px;
+  font-size:13px;font-weight:600;display:none;
+}
+
+/* Success page */
+.fsbo-success-wrap {
+  max-width:540px;margin:80px auto;padding:0 24px;text-align:center;
+}
+.fsbo-success-icon {
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,#1a6b3c,#2e9e5e);
+  color:#fff;font-size:36px;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 24px;
+}
+.fsbo-success-title{font-size:28px;font-weight:800;color:var(--dark);margin-bottom:10px}
+.fsbo-success-sub{font-size:16px;color:var(--muted);margin-bottom:8px}
+.fsbo-success-code {
+  display:inline-block;
+  background:#f5f5f5;border:1.5px dashed var(--border);
+  border-radius:8px;padding:10px 28px;
+  font-size:20px;font-weight:800;color:var(--copper);
+  letter-spacing:2px;margin:16px 0;
+}
+.fsbo-success-steps {
+  background:#fff;border-radius:10px;padding:20px;
+  border:1px solid var(--border);text-align:left;margin:20px 0;
+}
+.fsbo-success-steps li{font-size:14px;margin:8px 0;display:flex;gap:10px;align-items:center}
+.fsbo-success-steps li span{flex-shrink:0}
+.fsbo-success-btns{display:flex;gap:12px;justify-content:center;margin-top:20px}
+.fsbo-success-btn-main{
+  background:var(--copper);color:#fff;border:none;
+  padding:13px 28px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;
+}
+.fsbo-success-btn-sec{
+  background:#fff;color:var(--text);border:2px solid var(--border);
+  padding:13px 24px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;
+}
+
+/* Operator badge pills */
+.fsbo-op-group{display:flex;gap:10px;flex-wrap:wrap}
+.fsbo-op-pill{
+  flex:1;min-width:120px;border:2px solid var(--border);
+  border-radius:8px;padding:14px 16px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;transition:all .2s;
+}
+.fsbo-op-pill:hover{border-color:var(--copper)}
+.fsbo-op-pill.selected{border-color:var(--copper);background:#fff8f5}
+.fsbo-op-pill .op-icon{font-size:24px}
+.fsbo-op-pill .op-label{font-size:13px;font-weight:600;color:var(--text)}
+
+@media(max-width:600px){
+  .fsbo-row,.fsbo-row-3{grid-template-columns:1fr}
+  .fsbo-card{padding:20px 16px}
+  .fsbo-stepper{padding:16px 8px 0}
+  .fsbo-step-label{display:none}
+  .fsbo-footer-inner{padding:12px 16px}
+  .fsbo-btn-back,.fsbo-btn-next{padding:11px 18px;font-size:14px}
+}
+</style>
+
+<!-- ══════════════════ FSBO PAGE ══════════════════ -->
+<div id="page-fsbo" class="page">
+
+  <!-- Header -->
+  <div class="fsbo-header">
+    <div class="fsbo-header-inner">
+      <div class="logo-mini" onclick="showPage('page-home')">
+        <div class="icon">C</div>
+        <div>
+          <div class="brand">Copper GI</div>
+          <div class="sub">Gestión Inmobiliaria</div>
+        </div>
+      </div>
+      <div class="fsbo-back-link" onclick="showPage('page-home')">← Volver al sitio</div>
+    </div>
+    <div class="fsbo-progress-wrap">
+      <div class="fsbo-progress-bar" id="fsbo-progress"></div>
+    </div>
+  </div>
+
+  <!-- Step indicator -->
+  <div class="fsbo-stepper">
+    <div class="fsbo-step-item">
+      <div class="fsbo-step-dot active" id="dot-0">1</div>
+      <div class="fsbo-step-label">Dirección</div>
+    </div>
+    <div class="fsbo-step-item">
+      <div class="fsbo-step-dot" id="dot-1">2</div>
+      <div class="fsbo-step-label">Precio</div>
+    </div>
+    <div class="fsbo-step-item">
+      <div class="fsbo-step-dot" id="dot-2">3</div>
+      <div class="fsbo-step-label">Fotos</div>
+    </div>
+    <div class="fsbo-step-item">
+      <div class="fsbo-step-dot" id="dot-3">4</div>
+      <div class="fsbo-step-label">Descripción</div>
+    </div>
+    <div class="fsbo-step-item">
+      <div class="fsbo-step-dot" id="dot-4">5</div>
+      <div class="fsbo-step-label">Datos</div>
+    </div>
+    <div class="fsbo-step-item">
+      <div class="fsbo-step-dot" id="dot-5">6</div>
+      <div class="fsbo-step-label">Contacto</div>
+    </div>
+    <div class="fsbo-step-item">
+      <div class="fsbo-step-dot" id="dot-6">7</div>
+      <div class="fsbo-step-label">Revisar</div>
+    </div>
+  </div>
+
+  <!-- Wizard -->
+  <div class="fsbo-wizard" id="fsbo-wizard">
+
+    <!-- STEP 1 — Dirección -->
+    <div class="fsbo-panel active">
+      <div class="fsbo-card">
+        <div class="fsbo-card-title">¿Dónde está ubicada la propiedad?</div>
+        <div class="fsbo-card-sub">Ingresa la dirección exacta de la propiedad que deseas publicar.</div>
+
+        <div class="fsbo-field">
+          <label class="fsbo-label">Dirección completa *</label>
+          <input id="fsbo-direccion" class="fsbo-input" type="text" placeholder="Ej: Av. Atacama 1234, Copiapó" autocomplete="off">
+          <div class="fsbo-hint">Calle, número y ciudad</div>
+        </div>
+        <div class="fsbo-row">
+          <div class="fsbo-field">
+            <label class="fsbo-label">Sector / Barrio</label>
+            <select id="fsbo-sector" class="fsbo-select">
+              <option value="">Seleccionar sector</option>
+              <option value="Centro">Centro</option>
+              <option value="Balmaceda">Balmaceda</option>
+              <option value="Los Cóndores">Los Cóndores</option>
+              <option value="Villa Chuquicamata">Villa Chuquicamata</option>
+              <option value="Caldera">Caldera</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div class="fsbo-field">
+            <label class="fsbo-label">Ciudad</label>
+            <select id="fsbo-ciudad" class="fsbo-select">
+              <option value="Copiapó">Copiapó</option>
+              <option value="Caldera">Caldera</option>
+              <option value="Chañaral">Chañaral</option>
+              <option value="Diego de Almagro">Diego de Almagro</option>
+              <option value="Tierra Amarilla">Tierra Amarilla</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="fsbo-tip-box">
+          <div class="tip-title">💡 ¿Por qué necesitamos la dirección?</div>
+          <ul>
+            <li>Para mostrar la propiedad en el mapa de búsqueda</li>
+            <li>Para que compradores interesados puedan encontrarla</li>
+            <li>La dirección exacta solo se muestra a usuarios verificados</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 — Precio -->
+    <div class="fsbo-panel">
+      <div class="fsbo-card">
+        <div class="fsbo-card-title">¿Cuánto vale tu propiedad?</div>
+        <div class="fsbo-card-sub">Define el precio de venta o arriendo.</div>
+
+        <div class="fsbo-field">
+          <label class="fsbo-label">Tipo de operación</label>
+          <div class="fsbo-op-group" id="fsbo-op-group">
+            <div class="fsbo-op-pill selected" onclick="selectOp(this,'venta')">
+              <div class="op-icon">🏷️</div>
+              <div class="op-label">Venta</div>
+            </div>
+            <div class="fsbo-op-pill" onclick="selectOp(this,'arriendo')">
+              <div class="op-icon">🔑</div>
+              <div class="op-label">Arriendo</div>
+            </div>
+            <div class="fsbo-op-pill" onclick="selectOp(this,'venta-arriendo')">
+              <div class="op-icon">🔄</div>
+              <div class="op-label">Ambas</div>
+            </div>
+          </div>
+          <input type="hidden" id="fsbo-operacion" value="venta">
+        </div>
+
+        <div class="fsbo-field">
+          <label class="fsbo-label">Precio *</label>
+          <div class="fsbo-price-wrap">
+            <div class="fsbo-price-prefix">
+              <select id="fsbo-moneda" style="border:none;background:transparent;font-weight:600;color:var(--text);font-size:14px;cursor:pointer;outline:none">
+                <option value="UF">UF</option>
+                <option value="$">CLP $</option>
+                <option value="USD">USD</option>
+              </select>
+            </div>
+            <input id="fsbo-precio" class="fsbo-price-input" type="number" placeholder="0" oninput="updateEstimate()">
+            <div class="fsbo-price-suffix" id="fsbo-price-unit">/ total</div>
+          </div>
+          <div class="fsbo-hint">Para arriendo el precio es mensual. Para venta, total de la propiedad.</div>
+        </div>
+
+        <div class="fsbo-estimate-box" id="fsbo-estimate-box" style="display:none">
+          <div class="fsbo-estimate-icon">📊</div>
+          <div class="fsbo-estimate-text">
+            <div class="title">Rango estimado del mercado en Copiapó</div>
+            <div class="value" id="fsbo-estimate-value">—</div>
+            <div class="sub">Basado en propiedades similares en el sector</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 — Fotos -->
+    <div class="fsbo-panel">
+      <div class="fsbo-card">
+        <div class="fsbo-card-title">Agrega fotos de tu propiedad</div>
+        <div class="fsbo-card-sub">Las propiedades con fotos reciben hasta 3x más consultas. Se recomienda mínimo 5 fotos.</div>
+
+        <div class="fsbo-upload-zone" id="fsbo-drop-zone"
+          ondragover="event.preventDefault();this.classList.add('drag-over')"
+          ondragleave="this.classList.remove('drag-over')"
+          ondrop="event.preventDefault();this.classList.remove('drag-over');fsboHandlePhotos({files:event.dataTransfer.files})"
+          onclick="document.getElementById('fsbo-file-input').click()">
+          <div class="fsbo-upload-icon">📷</div>
+          <div class="fsbo-upload-title">Arrastra y suelta tus fotos aquí</div>
+          <div class="fsbo-upload-sub">o haz clic para seleccionar desde tu dispositivo</div>
+          <div class="fsbo-upload-btn">+ Subir Fotos</div>
+          <input type="file" id="fsbo-file-input" multiple accept="image/*" style="display:none" onchange="fsboHandlePhotos(this)">
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+          <div style="font-size:13px;color:var(--muted)">Formatos: JPG, PNG, WEBP. Máx. 10MB por foto.</div>
+          <div style="font-size:13px;font-weight:600;color:var(--copper)" id="fsbo-photo-count">0 foto(s)</div>
+        </div>
+        <div class="fsbo-photo-grid" id="fsbo-photo-grid"></div>
+
+        <div class="fsbo-tip-box" style="margin-top:20px">
+          <div class="tip-title">📸 Tips para mejores fotos</div>
+          <ul>
+            <li>Toma fotos con buena iluminación natural</li>
+            <li>Incluye todas las habitaciones principales</li>
+            <li>La primera foto será la imagen de portada</li>
+            <li>Muestra el exterior y jardín si aplica</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4 — Descripción -->
+    <div class="fsbo-panel">
+      <div class="fsbo-card">
+        <div class="fsbo-card-title">Describe tu propiedad</div>
+        <div class="fsbo-card-sub">Una buena descripción atrae más compradores serios.</div>
+
+        <div class="fsbo-field">
+          <label class="fsbo-label">Título del anuncio</label>
+          <input id="fsbo-titulo-custom" class="fsbo-input" type="text" placeholder="Ej: Hermosa casa con jardín en sector tranquilo">
+          <div class="fsbo-hint">Máx. 80 caracteres. Si lo dejas vacío, lo generamos automáticamente.</div>
+        </div>
+        <div class="fsbo-field">
+          <label class="fsbo-label">Descripción detallada *</label>
+          <textarea id="fsbo-desc" class="fsbo-textarea" placeholder="Describe las características más destacadas: estado de conservación, renovaciones recientes, puntos de interés cercanos, acceso a transporte público, características especiales..."></textarea>
+          <div style="display:flex;justify-content:space-between">
+            <div class="fsbo-hint">Mínimo 10 caracteres. Sé específico y honesto.</div>
+            <div class="fsbo-hint" id="fsbo-char-count">0 caracteres</div>
+          </div>
+        </div>
+
+        <div class="fsbo-field">
+          <label class="fsbo-label">Amenidades y características (separadas por coma)</label>
+          <input id="fsbo-tags-input" class="fsbo-input" type="text" placeholder="Ej: Piscina, Jardín, Bodega, Amoblada, Gas natural">
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5 — Datos de la propiedad -->
+    <div class="fsbo-panel">
+      <div class="fsbo-card">
+        <div class="fsbo-card-title">Datos de la propiedad</div>
+        <div class="fsbo-card-sub">Esta información ayuda a los compradores a filtrar y encontrar tu propiedad.</div>
+
+        <div class="fsbo-row">
+          <div class="fsbo-field">
+            <label class="fsbo-label">Tipo de propiedad *</label>
+            <select id="fsbo-tipo" class="fsbo-select">
+              <option value="">Seleccionar tipo</option>
+              <option value="Casa">Casa</option>
+              <option value="Departamento">Departamento</option>
+              <option value="Oficina">Oficina</option>
+              <option value="Local Comercial">Local Comercial</option>
+              <option value="Terreno">Terreno</option>
+              <option value="Bodega">Bodega</option>
+              <option value="Parcela">Parcela</option>
+            </select>
+          </div>
+          <div class="fsbo-field">
+            <label class="fsbo-label">Antigüedad</label>
+            <select id="fsbo-antiguedad" class="fsbo-select">
+              <option value="">Seleccionar</option>
+              <option value="Nuevo (estreno)">Nuevo (estreno)</option>
+              <option value="Menos de 5 años">Menos de 5 años</option>
+              <option value="5–10 años">5–10 años</option>
+              <option value="10–20 años">10–20 años</option>
+              <option value="Más de 20 años">Más de 20 años</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="fsbo-row-3">
+          <div class="fsbo-field">
+            <label class="fsbo-label">Dormitorios</label>
+            <select id="fsbo-dorms" class="fsbo-select">
+              <option value="0">Estudio (0)</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3" selected>3</option>
+              <option value="4">4</option>
+              <option value="5">5+</option>
+            </select>
+          </div>
+          <div class="fsbo-field">
+            <label class="fsbo-label">Baños</label>
+            <select id="fsbo-banos" class="fsbo-select">
+              <option value="1" selected>1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4+</option>
+            </select>
+          </div>
+          <div class="fsbo-field">
+            <label class="fsbo-label">Estacionamientos</label>
+            <select id="fsbo-estac" class="fsbo-select">
+              <option value="0">Sin estacionamiento</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3+</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="fsbo-row">
+          <div class="fsbo-field">
+            <label class="fsbo-label">Superficie útil (m²)</label>
+            <input id="fsbo-m2util" class="fsbo-input" type="number" placeholder="Ej: 80">
+          </div>
+          <div class="fsbo-field">
+            <label class="fsbo-label">Superficie total (m²)</label>
+            <input id="fsbo-m2total" class="fsbo-input" type="number" placeholder="Ej: 120">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 6 — Contacto -->
+    <div class="fsbo-panel">
+      <div class="fsbo-card">
+        <div class="fsbo-card-title">¿Cómo pueden contactarte?</div>
+        <div class="fsbo-card-sub">Los interesados verán esta información para agendar visitas o hacer consultas.</div>
+
+        <div class="fsbo-row">
+          <div class="fsbo-field">
+            <label class="fsbo-label">Tu nombre completo *</label>
+            <input id="fsbo-nombre" class="fsbo-input" type="text" placeholder="Nombre y apellido">
+          </div>
+          <div class="fsbo-field">
+            <label class="fsbo-label">Teléfono / WhatsApp *</label>
+            <input id="fsbo-tel" class="fsbo-input" type="tel" placeholder="+56 9 XXXX XXXX">
+          </div>
+        </div>
+        <div class="fsbo-field">
+          <label class="fsbo-label">Correo electrónico</label>
+          <input id="fsbo-email" class="fsbo-input" type="email" placeholder="tucorreo@ejemplo.com">
+          <div class="fsbo-hint">Opcional, pero recomendado para consultas por escrito</div>
+        </div>
+        <div class="fsbo-field">
+          <label class="fsbo-label">Horario de contacto preferido</label>
+          <select id="fsbo-horario" class="fsbo-select">
+            <option value="Cualquier hora">Cualquier hora</option>
+            <option value="Mañanas (9–12h)">Mañanas (9–12h)</option>
+            <option value="Mediodía (12–15h)">Mediodía (12–15h)</option>
+            <option value="Tardes (15–20h)">Tardes (15–20h)</option>
+            <option value="Solo WhatsApp">Solo WhatsApp</option>
+          </select>
+        </div>
+
+        <div class="fsbo-tip-box">
+          <div class="tip-title">🔒 Tu privacidad importa</div>
+          <ul>
+            <li>Solo usuarios registrados ven tu teléfono</li>
+            <li>Nunca compartimos tu información con terceros</li>
+            <li>Puedes editar o eliminar tu anuncio en cualquier momento</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 7 — Revisar y publicar -->
+    <div class="fsbo-panel">
+      <div class="fsbo-card">
+        <div class="fsbo-card-title">Revisa y publica tu anuncio</div>
+        <div class="fsbo-card-sub">Verifica que toda la información sea correcta antes de publicar.</div>
+        <div id="fsbo-review-content"></div>
+
+        <div class="fsbo-terms">
+          <input type="checkbox" id="fsbo-terms-check">
+          <label for="fsbo-terms-check">
+            He leído y acepto los <a href="#">Términos de Servicio</a> y la <a href="#">Política de Privacidad</a> de Copper GI.
+            Confirmo que soy el dueño o tengo autorización para publicar esta propiedad.
+          </label>
+        </div>
+
+        <div style="background:#fff8f5;border:1.5px solid rgba(181,69,27,.2);border-radius:10px;padding:16px 20px;margin-top:16px">
+          <div style="font-size:13px;font-weight:700;color:var(--copper);margin-bottom:6px">📋 ¿Qué pasa después de publicar?</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.7">
+            1. Nuestro equipo revisará tu anuncio en <strong>24–48 horas</strong><br>
+            2. Te contactaremos para verificar la información<br>
+            3. Una vez aprobado, tu propiedad aparecerá en el sitio<br>
+            4. Recibirás notificaciones cuando alguien consulte por tu propiedad
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end wizard -->
+
+  <!-- Error message -->
+  <div style="position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:300">
+    <div class="fsbo-err-msg" id="fsbo-err">⚠️ Por favor completa los campos requeridos antes de continuar.</div>
+  </div>
+
+  <!-- Footer nav -->
+  <div class="fsbo-footer-nav">
+    <div class="fsbo-footer-inner">
+      <button class="fsbo-btn-back" id="fsbo-btn-back" style="display:none" onclick="fsboBack()">← Atrás</button>
+      <div style="font-size:13px;color:var(--muted)">Paso <span id="fsbo-step-num">1</span> de 7</div>
+      <button class="fsbo-btn-next" id="fsbo-btn-next" onclick="fsboNext()">Continuar →</button>
+    </div>
+  </div>
+
+</div><!-- end page-fsbo -->
+
+<!-- ══════════════════ FSBO SUCCESS PAGE ══════════════════ -->
+<div id="page-fsbo-success" class="page">
+  <div style="background:#fff;border-bottom:2px solid var(--copper);padding:16px 24px;display:flex;justify-content:space-between;align-items:center">
+    <div style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="showPage('page-home')">
+      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--copper-dark),var(--copper-light));color:#fff;font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center">C</div>
+      <div style="font-size:15px;font-weight:700">Copper GI</div>
+    </div>
+  </div>
+  <div class="fsbo-success-wrap">
+    <div class="fsbo-success-icon">✓</div>
+    <div class="fsbo-success-title">¡Anuncio enviado!</div>
+    <div class="fsbo-success-sub">Tu propiedad está en revisión. Tu código de seguimiento:</div>
+    <div class="fsbo-success-code" id="fsbo-success-code">PDO-0000</div>
+    <div class="fsbo-success-steps">
+      <ul style="list-style:none;padding:0">
+        <li><span>✅</span> Anuncio recibido correctamente</li>
+        <li><span>🔍</span> Revisión por nuestro equipo (24–48 hrs)</li>
+        <li><span>📞</span> Te contactaremos para verificar</li>
+        <li><span>🌐</span> Publicación en el portal activa</li>
+      </ul>
+    </div>
+    <div class="fsbo-success-btns">
+      <button class="fsbo-success-btn-main" onclick="showPage('page-home')">🏠 Volver al inicio</button>
+      <button class="fsbo-success-btn-sec" onclick="showFsboPage()">+ Publicar otra</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// FSBO helpers that need DOM ready
+document.getElementById('fsbo-desc').addEventListener('input',function(){
+  document.getElementById('fsbo-char-count').textContent = this.value.length + ' caracteres';
+});
+
+function selectOp(el, val){
+  document.querySelectorAll('.fsbo-op-pill').forEach(p=>p.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('fsbo-operacion').value = val;
+  document.getElementById('fsbo-price-unit').textContent = val === 'arriendo' ? '/ mes' : '/ total';
+  updateEstimate();
+}
+
+function updateEstimate(){
+  const precio = parseFloat(document.getElementById('fsbo-precio').value);
+  const moneda = document.getElementById('fsbo-moneda').value;
+  const op = document.getElementById('fsbo-operacion').value;
+  const box = document.getElementById('fsbo-estimate-box');
+  const val = document.getElementById('fsbo-estimate-value');
+  if(!precio || precio <= 0){ box.style.display='none'; return; }
+  box.style.display='flex';
+  // Rough market range
+  const lo = (precio * 0.88).toLocaleString('es-CL',{maximumFractionDigits:0});
+  const hi = (precio * 1.12).toLocaleString('es-CL',{maximumFractionDigits:0});
+  val.textContent = `${moneda} ${lo} – ${moneda} ${hi}`;
+}
+
+// Override fsboRender to also update step number label
+const _origFsboRender = fsboRender;
+fsboRender = function(){
+  _origFsboRender();
+  document.getElementById('fsbo-step-num').textContent = fsboStep + 1;
+  // Sync dot IDs
+  document.querySelectorAll('.fsbo-step-dot').forEach((el,i)=>{
+    el.id = 'dot-'+i;
+  });
+};
 </script>
 </body>
 </html>

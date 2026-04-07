@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copper GI - Sistema CRM Inmobiliario</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; font-size: 13px; }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 56px;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  }
+  .topbar-logo { display: flex; align-items: center; gap: 8px; }
+  .topbar-logo .logo-box {
+    background: #1a1a1a;
+    width: 44px; height: 44px;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: #c87941; font-weight: 900;
+  }
+  .topbar-right { display: flex; align-items: center; gap: 16px; }
+  .uf-info { text-align: right; }
+  .uf-info .date { color: #c87941; font-size: 12px; font-weight: 600; }
+  .uf-info .uf { font-size: 12px; color: #555; }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #c87941;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 13px;
+    cursor: pointer;
+  }
+  .user-name { font-weight: 600; color: #444; cursor: pointer; }
+  .topbar-icons { display: flex; gap: 10px; align-items: center; }
+  .icon-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #f5f5f5; border: 1px solid #ddd;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 14px; transition: background .2s;
+  }
+  .icon-btn:hover { background: #e0e0e0; }
+
+  /* ── NAV ── */
+  nav {
+    background: #3a3f4a;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    height: 42px;
+    position: sticky; top: 56px; z-index: 99;
+  }
+  .nav-item {
+    color: #cdd3db;
+    text-decoration: none;
+    padding: 0 14px;
+    height: 42px;
+    display: flex; align-items: center; gap: 5px;
+    font-size: 13px;
+    cursor: pointer;
+    position: relative;
+    transition: background .2s, color .2s;
+    white-space: nowrap;
+    border: none; background: transparent;
+  }
+  .nav-item:hover, .nav-item.active { background: #2d3240; color: #fff; }
+  .nav-item .nav-icon { font-size: 14px; }
+  .nav-item .chevron { font-size: 9px; opacity: .7; }
+  .nav-item.badge-item .badge {
+    background: #c87941; color: #fff;
+    border-radius: 50%; width: 18px; height: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+  }
+
+  /* Dropdown */
+  .dropdown { position: relative; }
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 42px; left: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-width: 200px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    z-index: 200;
+  }
+  .dropdown:hover .dropdown-menu { display: block; }
+  .dropdown-menu a {
+    display: block; padding: 9px 16px;
+    color: #444; text-decoration: none;
+    font-size: 13px; border-bottom: 1px solid #f0f0f0;
+    transition: background .15s;
+  }
+  .dropdown-menu a:last-child { border-bottom: none; }
+  .dropdown-menu a:hover { background: #f5f7fa; color: #c87941; }
+
+  /* ── MAIN CONTENT ── */
+  .main { padding: 20px; max-width: 1400px; margin: 0 auto; }
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .page-title { font-size: 22px; font-weight: 300; color: #333; }
+  .header-actions { display: flex; gap: 10px; }
+  .btn-marketplace {
+    background: #fff; border: 2px solid #4a90d9;
+    color: #4a90d9; padding: 7px 16px; border-radius: 4px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: all .2s;
+  }
+  .btn-marketplace:hover { background: #4a90d9; color: #fff; }
+  .btn-novedades {
+    background: #fff; border: 1px solid #ddd;
+    color: #555; padding: 7px 16px; border-radius: 4px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: all .2s;
+  }
+  .btn-novedades:hover { background: #f5f5f5; }
+
+  /* ── DASHBOARD TABS ── */
+  .dash-tabs {
+    display: flex; gap: 0;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 18px;
+  }
+  .dash-tab {
+    padding: 8px 18px;
+    cursor: pointer; font-size: 13px; color: #777;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color .2s;
+  }
+  .dash-tab.active { color: #c87941; border-bottom-color: #c87941; font-weight: 600; }
+  .dash-tab:hover { color: #c87941; }
+
+  /* ── GRID LAYOUT ── */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 320px;
+    grid-template-rows: auto auto auto;
+    gap: 14px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    overflow: hidden;
+  }
+  .card-header {
+    background: #2d3240;
+    color: #fff;
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-header.blue { background: #3d5a8a; }
+  .card-header a { color: #8ab4d4; font-size: 11px; font-weight: 600; text-decoration: none; }
+  .card-header a:hover { color: #fff; }
+  .card-body { padding: 14px; }
+
+  /* CAPTACIONES */
+  .captaciones-grid { display: flex; gap: 0; }
+  .cap-cell {
+    flex: 1; text-align: center; padding: 10px 8px;
+    border-right: 1px solid #eee;
+  }
+  .cap-cell:last-child { border-right: none; }
+  .cap-val { font-size: 22px; font-weight: 700; color: #333; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .cap-val .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot-yellow { background: #f0a500; }
+  .dot-red { background: #e53935; }
+  .dot-green { background: #43a047; }
+  .cap-label { font-size: 10px; color: #888; margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
+
+  /* AVISOS */
+  .aviso-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 0; border-bottom: 1px solid #f0f0f0;
+  }
+  .aviso-row:last-child { border-bottom: none; }
+  .aviso-num {
+    background: #fce4ec; color: #c62828;
+    border-radius: 4px; padding: 3px 8px;
+    font-weight: 700; font-size: 14px; min-width: 36px; text-align: center;
+  }
+  .aviso-num.blue { background: #e3f2fd; color: #1565c0; }
+  .aviso-text { color: #555; font-size: 12px; }
+
+  /* SOLICITUDES / CONTACTOS */
+  .sol-header { font-size: 10px; color: #888; text-align: center; padding-bottom: 6px; border-bottom: 1px solid #eee; margin-bottom: 8px; }
+  .sol-period { font-size: 10px; color: #aaa; text-align: center; margin-bottom: 6px; }
+  .sol-grid { display: flex; gap: 0; }
+  .sol-cell { flex: 1; text-align: center; padding: 6px 4px; }
+  .sol-val { font-size: 20px; font-weight: 700; color: #333; }
+  .sol-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: .5px; }
+  .big-stat { text-align: center; padding: 8px 0; }
+  .big-stat .val { font-size: 28px; font-weight: 700; color: #333; }
+  .big-stat .label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+
+  /* REPORTES */
+  .reportes-card { background: #7c5cbf; border-radius: 6px; overflow: hidden; }
+  .reportes-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px 6px;
+  }
+  .reportes-title { color: #fff; font-weight: 700; font-size: 14px; }
+  .reportes-sub { color: rgba(255,255,255,.7); font-size: 11px; margin-top: 2px; }
+  .reportes-link { color: rgba(255,255,255,.85); font-size: 11px; font-weight: 600; text-decoration: none; }
+  .reportes-link:hover { color: #fff; }
+  .reportes-stats { display: flex; gap: 0; padding: 6px 16px 0; }
+  .rep-stat { flex: 1; }
+  .rep-stat .val { color: #fff; font-size: 26px; font-weight: 700; }
+  .rep-stat .label { color: rgba(255,255,255,.7); font-size: 11px; }
+  .rep-progress-bar { margin: 8px 16px; height: 8px; background: rgba(255,255,255,.2); border-radius: 4px; }
+  .rep-progress-fill { height: 8px; background: rgba(255,255,255,.7); border-radius: 4px; width: 54%; }
+  .rep-progress-note { color: rgba(255,255,255,.6); font-size: 10px; padding: 0 16px 6px; text-align: center; }
+  .rep-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 8px 16px 14px; }
+  .rep-chart-box { background: rgba(255,255,255,.12); border-radius: 6px; padding: 10px; }
+  .rep-chart-title { color: rgba(255,255,255,.85); font-size: 11px; font-weight: 700; margin-bottom: 6px; letter-spacing: .5px; }
+  .rep-chart-canvas { width: 100%; height: 80px; }
+
+  /* DOCS */
+  .docs-card { background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+  .docs-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px 8px; border-bottom: 1px solid #eee; }
+  .docs-title { font-size: 12px; color: #888; }
+  .docs-link { color: #4a90d9; font-size: 11px; text-decoration: none; font-weight: 600; }
+  .docs-empty { text-align: center; padding: 30px 20px; color: #bbb; font-size: 12px; }
+  .docs-empty-img { font-size: 48px; margin-bottom: 8px; opacity: .4; }
+
+  /* ACADEMIA */
+  .academia-card {
+    background: linear-gradient(135deg, #1a5276, #2980b9);
+    border-radius: 6px; overflow: hidden;
+    padding: 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+  }
+  .academia-icon { font-size: 40px; }
+  .academia-title { color: #fff; font-size: 15px; font-weight: 700; }
+  .academia-sub { color: rgba(255,255,255,.8); font-size: 12px; margin-bottom: 6px; }
+  .academia-link { color: #fff; font-size: 12px; font-weight: 600; text-decoration: none; }
+
+  /* RIGHT COLUMN */
+  .right-col { display: flex; flex-direction: column; gap: 14px; }
+
+  /* TAREAS */
+  .tareas-card .card-body { padding: 12px 14px; }
+  .tareas-sub { color: #888; font-size: 11px; margin-bottom: 10px; }
+  .tarea-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #555; margin-bottom: 10px; }
+  .tarea-status .dot { width: 8px; height: 8px; background: #43a047; border-radius: 50%; }
+  .tareas-empty { color: #aaa; font-size: 12px; padding: 12px 0; }
+
+  /* PODCAST */
+  .podcast-card {
+    background: linear-gradient(135deg, #e91e63, #9c27b0);
+    border-radius: 6px; overflow: hidden;
+    display: flex; align-items: center; justify-content: space-around;
+    padding: 14px 10px;
+  }
+  .podcast-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+  .podcast-icon { font-size: 28px; }
+  .podcast-label { color: #fff; font-size: 10px; font-weight: 600; }
+  .podcast-center { text-align: center; }
+  .podcast-center .brand { color: #fff; font-size: 11px; font-weight: 700; line-height: 1.2; }
+  .podcast-center .badge { background: #ff9800; color: #fff; font-size: 8px; padding: 1px 5px; border-radius: 3px; display: inline-block; margin-top: 2px; }
+
+  /* COMENTARIOS */
+  .comentarios-card .card-body { padding: 12px 14px; }
+  .coment-tabs { display: flex; gap: 0; border-bottom: 1px solid #eee; margin-bottom: 10px; }
+  .coment-tab { padding: 6px 14px; font-size: 12px; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .coment-tab.active { color: #4a90d9; border-bottom-color: #4a90d9; font-weight: 600; }
+  .coment-empty { color: #e91e63; font-size: 12px; text-align: center; padding: 16px 0; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.4); z-index: 999;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 8px;
+    width: 480px; max-width: 95vw;
+    box-shadow: 0 8px 32px rgba(0,0,0,.25);
+    overflow: hidden;
+  }
+  .modal-header {
+    background: #2d3240; color: #fff;
+    padding: 14px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-title { font-weight: 600; font-size: 14px; }
+  .modal-close { cursor: pointer; font-size: 18px; opacity: .7; }
+  .modal-close:hover { opacity: 1; }
+  .modal-body { padding: 20px; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 12px; color: #555; margin-bottom: 5px; font-weight: 600; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 8px 10px;
+    border: 1px solid #ddd; border-radius: 4px;
+    font-size: 13px; color: #333;
+    transition: border-color .2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none; border-color: #c87941;
+  }
+  .form-row { display: flex; gap: 12px; }
+  .form-row .form-group { flex: 1; }
+  .modal-footer { padding: 14px 20px; border-top: 1px solid #eee; display: flex; gap: 10px; justify-content: flex-end; }
+  .btn { padding: 8px 20px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; border: none; }
+  .btn-primary { background: #c87941; color: #fff; }
+  .btn-primary:hover { background: #a8622e; }
+  .btn-secondary { background: #f0f0f0; color: #555; border: 1px solid #ddd; }
+  .btn-secondary:hover { background: #e0e0e0; }
+
+  /* ── TAB PANELS ── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Propiedades Tab */
+  .prop-table-wrap { background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.07); overflow: hidden; }
+  .prop-table-header { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; }
+  .prop-table-title { font-weight: 600; color: #333; font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #f8f9fa; color: #555; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; padding: 10px 14px; text-align: left; border-bottom: 2px solid #eee; }
+  td { padding: 10px 14px; border-bottom: 1px solid #f0f0f0; font-size: 12px; color: #444; }
+  tr:hover td { background: #fafbfc; }
+  .status-badge { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .status-venta { background: #e3f2fd; color: #1565c0; }
+  .status-arriendo { background: #e8f5e9; color: #2e7d32; }
+  .status-vendida { background: #fce4ec; color: #c62828; }
+  .prop-price { font-weight: 700; color: #c87941; }
+
+  /* Clientes Tab */
+  .clientes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .cliente-card {
+    background: #fff; border-radius: 6px; padding: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    display: flex; gap: 12px; align-items: flex-start;
+    cursor: pointer; transition: box-shadow .2s;
+  }
+  .cliente-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,.12); }
+  .cliente-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: #3d5a8a; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; flex-shrink: 0;
+  }
+  .cliente-info .name { font-weight: 600; color: #333; font-size: 13px; }
+  .cliente-info .email { color: #888; font-size: 11px; margin-top: 2px; }
+  .cliente-info .phone { color: #c87941; font-size: 11px; margin-top: 2px; }
+  .cliente-tag { display: inline-block; background: #e8f5e9; color: #2e7d32; border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: 600; margin-top: 6px; }
+
+  /* Contactos Tab */
+  .contactos-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 16px; }
+  .stat-card { background: #fff; border-radius: 6px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.07); text-align: center; }
+  .stat-card .num { font-size: 32px; font-weight: 700; color: #333; }
+  .stat-card .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: .5px; margin-top: 4px; }
+  .stat-card.highlight .num { color: #c87941; }
+
+  /* Ventas Tab */
+  .ventas-header { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
+  .venta-stat { background: #fff; border-radius: 6px; padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+  .venta-stat .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+  .venta-stat .val { font-size: 28px; font-weight: 700; color: #333; }
+  .venta-stat .sub { font-size: 11px; color: #888; margin-top: 4px; }
+  .venta-stat.primary .val { color: #c87941; }
+
+  /* Documentos Tab */
+  .docs-upload-area {
+    border: 2px dashed #ddd; border-radius: 8px;
+    padding: 40px; text-align: center; color: #aaa;
+    margin-bottom: 16px; cursor: pointer;
+    transition: border-color .2s, color .2s;
+  }
+  .docs-upload-area:hover { border-color: #c87941; color: #c87941; }
+  .docs-upload-icon { font-size: 48px; margin-bottom: 8px; }
+  .docs-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .doc-item {
+    background: #fff; border-radius: 6px; padding: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    display: flex; gap: 10px; align-items: center;
+  }
+  .doc-icon { font-size: 28px; }
+  .doc-info .name { font-size: 12px; font-weight: 600; color: #333; }
+  .doc-info .meta { font-size: 10px; color: #888; margin-top: 2px; }
+
+  /* Notification toast */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: #2d3240; color: #fff;
+    padding: 12px 20px; border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.3);
+    font-size: 13px; z-index: 9999;
+    transform: translateY(80px); opacity: 0;
+    transition: all .3s ease;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-left: 4px solid #43a047; }
+  .toast.info { border-left: 4px solid #4a90d9; }
+
+  /* Search bar */
+  .search-bar { position: relative; margin-left: auto; margin-right: 16px; }
+  .search-bar input {
+    padding: 5px 12px 5px 32px; border-radius: 20px;
+    border: 1px solid #555; background: rgba(255,255,255,.1);
+    color: #fff; font-size: 12px; width: 180px;
+    transition: width .3s, background .3s;
+  }
+  .search-bar input::placeholder { color: rgba(255,255,255,.5); }
+  .search-bar input:focus { outline: none; width: 240px; background: rgba(255,255,255,.15); }
+  .search-bar .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,.6); font-size: 12px; }
+
+  /* Responsive adjustments */
+  @media (max-width: 1100px) {
+    .dashboard-grid { grid-template-columns: 1fr 1fr; }
+    .right-col { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; }
+    .right-col > * { flex: 1; min-width: 260px; }
+  }
+  @media (max-width: 720px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+    nav { overflow-x: auto; }
+    .search-bar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── TOP BAR ── -->
+<header class="topbar">
+  <div class="topbar-logo">
+    <div class="logo-box">C</div>
+  </div>
+  <div class="topbar-right">
+    <div class="uf-info">
+      <div class="date" id="currentDate">lunes, 6 de abril de 2026</div>
+      <div class="uf">UF <span id="ufValue">39.841,72</span> <span style="color:#43a047">●</span></div>
+    </div>
+    <div class="topbar-icons">
+      <div class="icon-btn" title="Notificaciones">🔔</div>
+      <div class="icon-btn" title="Configuración">⚙️</div>
+    </div>
+    <div class="avatar" onclick="openModal('modal-perfil')">J</div>
+    <div class="user-name" onclick="openModal('modal-perfil')">Jaime ▾</div>
+    <div style="display:flex;gap:6px;margin-left:8px;align-items:center">
+      <button onclick="exportCrmDB()" title="Exportar base de datos" style="background:#2e7d32;color:#fff;border:none;padding:5px 10px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer">⬇️ Export DB</button>
+      <label title="Importar base de datos" style="background:#1565c0;color:#fff;border:none;padding:5px 10px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;margin:0">
+        ⬆️ Import<input type="file" accept=".json" style="display:none" onchange="importCrmDB(this)">
+      </label>
+      <button onclick="clearCrmDB()" title="Reiniciar base de datos" style="background:#c62828;color:#fff;border:none;padding:5px 10px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer">🗑️ Reset</button>
+    </div>
+  </div>
+</header>
+
+<!-- ── NAV ── -->
+<nav>
+  <a class="nav-item active" onclick="setNavActive(this)">
+    <span class="nav-icon">🏠</span> Inicio
+  </a>
+  <div class="dropdown">
+    <a class="nav-item" onclick="setNavActive(this)">
+      <span class="nav-icon">⚙️</span> Sistema <span class="chevron">▾</span>
+    </a>
+    <div class="dropdown-menu">
+      <a href="#">Usuarios</a>
+      <a href="#">Oficinas</a>
+      <a href="#">Configuración</a>
+      <a href="#">Parámetros</a>
+      <a href="#">Integraciones</a>
+    </div>
+  </div>
+  <div class="dropdown">
+    <a class="nav-item" onclick="setNavActive(this); switchTab('tab-clientes')">
+      <span class="nav-icon">👥</span> Clientes <span class="chevron">▾</span>
+    </a>
+    <div class="dropdown-menu">
+      <a href="#" onclick="switchTab('tab-clientes')">Lista de Clientes</a>
+      <a href="#" onclick="openModal('modal-cliente')">Nuevo Cliente</a>
+      <a href="#" onclick="switchTab('tab-contactos')">Solicitudes de Visita</a>
+      <a href="#">Órdenes de Visita</a>
+      <a href="#">Leads</a>
+    </div>
+  </div>
+  <div class="dropdown">
+    <a class="nav-item" onclick="setNavActive(this); switchTab('tab-propiedades')">
+      <span class="nav-icon">🏠</span> Propiedades <span class="chevron">▾</span>
+    </a>
+    <div class="dropdown-menu">
+      <a href="#" onclick="switchTab('tab-propiedades')">Todas las Propiedades</a>
+      <a href="#" onclick="openModal('modal-propiedad')">Nueva Propiedad</a>
+      <a href="#">Por Captación</a>
+      <a href="#">Modificaciones</a>
+      <a href="#">Prop. Seleccionadas</a>
+    </div>
+  </div>
+  <div class="dropdown">
+    <a class="nav-item" onclick="setNavActive(this)">
+      <span class="nav-icon">📊</span> Reportes <span class="chevron">▾</span>
+    </a>
+    <div class="dropdown-menu">
+      <a href="#">Dashboard General</a>
+      <a href="#">Captaciones</a>
+      <a href="#">Ventas y Arriendos</a>
+      <a href="#">Contactos</a>
+      <a href="#">Órdenes de Visita</a>
+    </div>
+  </div>
+  <div class="dropdown">
+    <a class="nav-item" onclick="setNavActive(this)">
+      <span class="nav-icon">🌐</span> Portales <span class="chevron">▾</span>
+    </a>
+    <div class="dropdown-menu">
+      <a href="#">Portal Web</a>
+      <a href="#">Mercado Libre</a>
+      <a href="#">Portal Inmobiliario</a>
+      <a href="#">Yapo</a>
+    </div>
+  </div>
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="Buscar propiedades, clientes...">
+  </div>
+  <a class="nav-item badge-item" style="margin-left:auto" onclick="setNavActive(this); switchTab('tab-propiedades')">
+    <div class="badge">0</div> Prop. seleccionadas
+  </a>
+</nav>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1 class="page-title">Paneles de control</h1>
+    <div class="header-actions">
+      <button class="btn-marketplace">🛍️ Market Place</button>
+      <button class="btn-novedades">🔔 Novedades</button>
+    </div>
+  </div>
+
+  <!-- Dashboard Tabs -->
+  <div class="dash-tabs">
+    <div class="dash-tab active" onclick="switchTab('tab-general', this)">General</div>
+    <div class="dash-tab" onclick="switchTab('tab-propiedades', this)">Propiedades</div>
+    <div class="dash-tab" onclick="switchTab('tab-contactos', this)">Contactos</div>
+    <div class="dash-tab" onclick="switchTab('tab-clientes', this)">Clientes</div>
+    <div class="dash-tab" onclick="switchTab('tab-documentos', this)">Documentos</div>
+    <div class="dash-tab" onclick="switchTab('tab-ventas', this)">Ventas</div>
+  </div>
+
+  <!-- ── GENERAL TAB ── -->
+  <div id="tab-general" class="tab-panel active">
+    <div class="dashboard-grid">
+
+      <!-- Col 1 -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+
+        <!-- CAPTACIONES -->
+        <div class="card">
+          <div class="card-header">Captaciones</div>
+          <div class="captaciones-grid">
+            <div class="cap-cell">
+              <div class="cap-val"><span class="dot dot-yellow"></span>16</div>
+              <div class="cap-label">No Disponibles</div>
+            </div>
+            <div class="cap-cell">
+              <div class="cap-val"><span class="dot dot-yellow"></span>15</div>
+              <div class="cap-label">Ptes. Visación</div>
+            </div>
+            <div class="cap-cell">
+              <div class="cap-val">–</div>
+              <div class="cap-label">Rechazadas</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AVISOS -->
+        <div class="card">
+          <div class="card-header">Avisos</div>
+          <div class="card-body">
+            <div class="aviso-row">
+              <div class="aviso-num">50</div>
+              <div class="aviso-text">Clientes con novedades</div>
+            </div>
+            <div class="aviso-row">
+              <div class="aviso-num blue">8</div>
+              <div class="aviso-text">Propiedades sin info</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DOCS / NUBE -->
+        <div class="docs-card">
+          <div class="docs-header">
+            <span class="docs-title">Información y docs. de uso interno</span>
+            <a href="#" class="docs-link">VER TODOS ▶</a>
+          </div>
+          <div class="docs-empty">
+            <div class="docs-empty-img">📊</div>
+            <div>No hay documentos en la nube</div>
+          </div>
+        </div>
+
+        <!-- ACADEMIA -->
+        <div class="academia-card" onclick="showToast('Redirigiendo a la Academia...', 'info')">
+          <div class="academia-icon">🎓</div>
+          <div>
+            <div class="academia-title">ACADEMIA</div>
+            <div class="academia-sub">Saca el mayor partido al sistema</div>
+            <a class="academia-link">Entrar ▶</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Col 2 -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+
+        <!-- MODIFICACIONES -->
+        <div class="card">
+          <div class="card-header">Modificaciones</div>
+          <div class="captaciones-grid">
+            <div class="cap-cell">
+              <div class="cap-val"><span class="dot dot-red"></span>1</div>
+              <div class="cap-label">Precio</div>
+            </div>
+            <div class="cap-cell">
+              <div class="cap-val">–</div>
+              <div class="cap-label">Pasivas</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SOLICITUDES DE VISITA -->
+        <div class="card">
+          <div class="card-header blue">
+            Solicitudes de Visita
+            <a href="#">IR ▶</a>
+          </div>
+          <div class="card-body">
+            <div class="sol-header">Desde Mercado Libre</div>
+            <div class="sol-period">Últimos 30 días</div>
+            <div class="sol-grid">
+              <div class="sol-cell">
+                <div class="sol-val">–</div>
+                <div class="sol-label">Sin Confirmar</div>
+              </div>
+              <div class="sol-cell">
+                <div class="sol-val">0</div>
+                <div class="sol-label">Confirmadas</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTACTOS -->
+        <div class="card">
+          <div class="card-header blue">
+            Contactos
+            <a href="#">IR ▶</a>
+          </div>
+          <div class="card-body">
+            <div class="sol-period">–</div>
+            <div class="sol-period">Últimos 30 días</div>
+            <div class="big-stat">
+              <div class="val">210</div>
+              <div class="label">Recibidos</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- REPORTES -->
+        <div class="reportes-card">
+          <div class="reportes-header">
+            <div>
+              <div class="reportes-title">REPORTES</div>
+              <div class="reportes-sub">Información de todas las oficinas</div>
+            </div>
+            <a href="#" class="reportes-link">IR A METRICS ▶</a>
+          </div>
+          <div class="reportes-stats">
+            <div class="rep-stat">
+              <div class="val">48</div>
+              <div class="label">prop. en VENTA</div>
+            </div>
+            <div class="rep-stat" style="text-align:right">
+              <div class="val">42</div>
+              <div class="label">prop. en ARRIENDO</div>
+            </div>
+          </div>
+          <div class="rep-progress-bar">
+            <div class="rep-progress-fill"></div>
+          </div>
+          <div class="rep-progress-note">(2 simultáneamente en Venta y Arriendo)</div>
+          <div class="rep-charts">
+            <div class="rep-chart-box">
+              <div class="rep-chart-title">CAPTACIONES</div>
+              <canvas id="chartCaptaciones" class="rep-chart-canvas"></canvas>
+            </div>
+            <div class="rep-chart-box">
+              <div class="rep-chart-title">CARTERA POR TIPO</div>
+              <canvas id="chartCartera" class="rep-chart-canvas"></canvas>
+            </div>
+            <div class="rep-chart-box">
+              <div class="rep-chart-title">CONTACTOS</div>
+              <canvas id="chartContactos" class="rep-chart-canvas"></canvas>
+            </div>
+            <div class="rep-chart-box">
+              <div class="rep-chart-title">ÓRDENES DE VISITA</div>
+              <canvas id="chartVisitas" class="rep-chart-canvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Col 3 – Right -->
+      <div class="right-col">
+
+        <!-- TAREAS -->
+        <div class="card tareas-card">
+          <div class="card-header">
+            TAREAS
+            <a href="#" onclick="openModal('modal-tarea')">VER TODAS ▶</a>
+          </div>
+          <div class="card-body">
+            <div class="tareas-sub">Resumen de siguientes acciones a realizar.</div>
+            <div class="tarea-status"><span class="dot"></span> Sin tareas pendientes</div>
+            <div class="tareas-empty">No tienes ninguna tarea programada en los próximos 3 días</div>
+          </div>
+        </div>
+
+        <!-- PODCAST -->
+        <div class="podcast-card">
+          <div class="podcast-item">
+            <div class="podcast-icon">🎵</div>
+            <div class="podcast-label">Spotify</div>
+          </div>
+          <div class="podcast-center">
+            <div class="brand">prop<br><strong>Cast360</strong></div>
+            <div class="badge">EL PODCAST DE CONVECTA</div>
+          </div>
+          <div class="podcast-item">
+            <div class="podcast-icon">🎧</div>
+            <div class="podcast-label">Apple</div>
+          </div>
+        </div>
+
+        <!-- ÚLTIMOS COMENTARIOS -->
+        <div class="card comentarios-card">
+          <div class="card-header">
+            ÚLTIMOS COMENTARIOS
+            <a href="#">VER TODOS ▶</a>
+          </div>
+          <div class="card-body">
+            <div class="tareas-sub">Sobre propiedades y órdenes de visita.</div>
+            <div class="coment-tabs">
+              <div class="coment-tab active" onclick="setComentTab(this)">Solo mis propiedades</div>
+              <div class="coment-tab" onclick="setComentTab(this)">Todos</div>
+            </div>
+            <div class="coment-empty">No hay comentarios registrados</div>
+          </div>
+        </div>
+
+        <!-- NUEVA TAREA quick action -->
+        <button class="btn btn-primary" style="width:100%;padding:10px" onclick="openModal('modal-tarea')">
+          ➕ Nueva Tarea
+        </button>
+        <button class="btn btn-secondary" style="width:100%;padding:10px" onclick="openModal('modal-propiedad')">
+          🏠 Nueva Propiedad
+        </button>
+        <button class="btn btn-secondary" style="width:100%;padding:10px" onclick="openModal('modal-cliente')">
+          👤 Nuevo Cliente
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROPIEDADES TAB ── -->
+  <div id="tab-propiedades" class="tab-panel">
+    <div class="prop-table-wrap">
+      <div class="prop-table-header">
+        <span class="prop-table-title">Listado de Propiedades</span>
+        <button class="btn btn-primary" onclick="openModal('modal-propiedad')">+ Nueva Propiedad</button>
+      </div>
+      <div style="padding:10px 16px; border-bottom:1px solid #eee; display:flex; gap:10px;">
+        <input type="text" placeholder="🔍 Buscar propiedades..." style="padding:6px 12px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:240px">
+        <select style="padding:6px 10px;border:1px solid #ddd;border-radius:4px;font-size:12px;color:#555">
+          <option>Todos los estados</option>
+          <option>En Venta</option>
+          <option>En Arriendo</option>
+          <option>Vendida</option>
+        </select>
+        <select style="padding:6px 10px;border:1px solid #ddd;border-radius:4px;font-size:12px;color:#555">
+          <option>Todos los tipos</option>
+          <option>Casa</option>
+          <option>Departamento</option>
+          <option>Oficina</option>
+          <option>Local Comercial</option>
+        </select>
+      </div>
+      <table id="propiedades-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Dirección</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Precio</th>
+            <th>M²</th>
+            <th>Dorms.</th>
+            <th>Baños</th>
+            <th>Captador</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="propiedades-tbody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── CONTACTOS TAB ── -->
+  <div id="tab-contactos" class="tab-panel">
+    <div class="contactos-stats">
+      <div class="stat-card highlight">
+        <div class="num">210</div>
+        <div class="label">Total Contactos (30 días)</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">0</div>
+        <div class="label">Solicitudes Confirmadas</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">–</div>
+        <div class="label">Sin Confirmar</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">48</div>
+        <div class="label">Propiedades en Venta</div>
+      </div>
+    </div>
+    <div class="prop-table-wrap">
+      <div class="prop-table-header">
+        <span class="prop-table-title">Solicitudes de Visita</span>
+        <button class="btn btn-primary" onclick="populateModalSelects();openModal('modal-visita')">+ Nueva Solicitud</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Propiedad</th>
+            <th>Origen</th>
+            <th>Estado</th>
+            <th>Agente</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="contactos-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── CLIENTES TAB ── -->
+  <div id="tab-clientes" class="tab-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <input type="text" placeholder="🔍 Buscar clientes..." style="padding:8px 14px;border:1px solid #ddd;border-radius:4px;font-size:13px;width:280px">
+      <button class="btn btn-primary" onclick="openModal('modal-cliente')">+ Nuevo Cliente</button>
+    </div>
+    <div class="clientes-grid" id="clientes-grid"></div>
+  </div>
+
+  <!-- ── DOCUMENTOS TAB ── -->
+  <div id="tab-documentos" class="tab-panel">
+    <div class="docs-upload-area" onclick="showToast('Función de carga disponible pronto', 'info')">
+      <div class="docs-upload-icon">📁</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:4px">Arrastra archivos aquí o haz clic para subir</div>
+      <div style="font-size:12px">PDF, Word, Excel, imágenes — máx. 50MB</div>
+    </div>
+    <div class="docs-list" id="docs-list"></div>
+  </div>
+
+  <!-- ── VENTAS TAB ── -->
+  <div id="tab-ventas" class="tab-panel">
+    <div class="ventas-header">
+      <div class="venta-stat primary">
+        <div class="label">Total Ventas (año)</div>
+        <div class="val">12</div>
+        <div class="sub">UF 8.420.000 aprox.</div>
+      </div>
+      <div class="venta-stat">
+        <div class="label">Arriendos Activos</div>
+        <div class="val">42</div>
+        <div class="sub">UF 3.200/mes aprox.</div>
+      </div>
+      <div class="venta-stat">
+        <div class="label">Comisiones (30 días)</div>
+        <div class="val">UF 48</div>
+        <div class="sub">3 operaciones cerradas</div>
+      </div>
+    </div>
+    <div class="prop-table-wrap">
+      <div class="prop-table-header">
+        <span class="prop-table-title">Historial de Operaciones</span>
+        <button class="btn btn-primary" onclick="populateModalSelects();openModal('modal-venta')" style="font-size:12px;padding:7px 14px">+ Nuevo Negocio</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Propiedad</th>
+            <th>Cliente Comprador</th>
+            <th>Tipo</th>
+            <th>Precio</th>
+            <th>Comisión</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="ventas-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODALS ── -->
+
+<!-- Nueva Propiedad -->
+<div class="modal-overlay" id="modal-propiedad">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">🏠 Nueva Propiedad</span>
+      <span class="modal-close" onclick="closeModal('modal-propiedad')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo de Propiedad</label>
+          <select id="p-tipo">
+            <option value="Casa">Casa</option>
+            <option value="Departamento">Departamento</option>
+            <option value="Oficina">Oficina</option>
+            <option value="Local Comercial">Local Comercial</option>
+            <option value="Terreno">Terreno</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Operación</label>
+          <select id="p-estado">
+            <option value="venta">Venta</option>
+            <option value="arriendo">Arriendo</option>
+            <option value="venta-arriendo">Venta y Arriendo</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Dirección *</label>
+        <input id="p-dir" type="text" placeholder="Av. Atacama 1234, Copiapó">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Moneda</label>
+          <select id="p-moneda" style="width:100%">
+            <option value="UF">UF</option>
+            <option value="$">CLP $</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Precio</label>
+          <input id="p-precio" type="number" placeholder="3.500">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Superficie (m²)</label>
+          <input id="p-m2" type="number" placeholder="120">
+        </div>
+        <div class="form-group">
+          <label>Captado por</label>
+          <select id="p-cap">
+            <option value="Jaime V.">Jaime V.</option>
+            <option value="María S.">María S.</option>
+            <option value="Pedro A.">Pedro A.</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Dormitorios</label>
+          <input id="p-dorms" type="number" placeholder="3">
+        </div>
+        <div class="form-group">
+          <label>Baños</label>
+          <input id="p-banos" type="number" placeholder="2">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Notas internas</label>
+        <textarea id="p-notas" rows="3" placeholder="Observaciones, estado de conservación, disponibilidad..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-propiedad')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addPropiedad()">Guardar Propiedad</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nuevo Cliente -->
+<div class="modal-overlay" id="modal-cliente">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">👤 Nuevo Cliente</span>
+      <span class="modal-close" onclick="closeModal('modal-cliente')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" id="c-nombre" placeholder="Juan">
+        </div>
+        <div class="form-group">
+          <label>Apellido</label>
+          <input type="text" id="c-apellido" placeholder="González">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="c-email" placeholder="juan@email.com">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="tel" id="c-tel" placeholder="+56 9 1234 5678">
+        </div>
+        <div class="form-group">
+          <label>RUT</label>
+          <input type="text" placeholder="12.345.678-9">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo</label>
+          <select id="c-tipo">
+            <option>Comprador</option>
+            <option>Arrendatario</option>
+            <option>Vendedor</option>
+            <option>Propietario</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Origen</label>
+          <select>
+            <option>Web</option>
+            <option>Mercado Libre</option>
+            <option>Referido</option>
+            <option>Portales</option>
+            <option>Otro</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-cliente')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addCliente()">Guardar Cliente</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nueva Tarea -->
+<div class="modal-overlay" id="modal-tarea">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">✅ Nueva Tarea</span>
+      <span class="modal-close" onclick="closeModal('modal-tarea')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Título de la Tarea</label>
+        <input type="text" placeholder="Llamar cliente, visita propiedad...">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha</label>
+          <input type="date">
+        </div>
+        <div class="form-group">
+          <label>Hora</label>
+          <input type="time">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo</label>
+          <select>
+            <option>Llamada</option>
+            <option>Visita</option>
+            <option>Reunión</option>
+            <option>Seguimiento</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Prioridad</label>
+          <select>
+            <option>Normal</option>
+            <option>Alta</option>
+            <option>Urgente</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Notas</label>
+        <textarea rows="3" placeholder="Detalles de la tarea..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-tarea')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-tarea'); showToast('Tarea creada exitosamente', 'success')">Crear Tarea</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nueva Visita -->
+<div class="modal-overlay" id="modal-visita">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">📅 Nueva Solicitud de Visita</span>
+      <span class="modal-close" onclick="closeModal('modal-visita')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Cliente *</label>
+        <select id="v-cliente"><option value="">Seleccionar cliente...</option></select>
+      </div>
+      <div class="form-group">
+        <label>Propiedad</label>
+        <select id="v-propiedad"><option value="">Seleccionar propiedad...</option></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha</label>
+          <input id="v-fecha" type="date">
+        </div>
+        <div class="form-group">
+          <label>Hora</label>
+          <input id="v-hora" type="time">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Origen del contacto</label>
+        <select id="v-origen">
+          <option value="Web">Web</option>
+          <option value="Mercado Libre">Mercado Libre</option>
+          <option value="Teléfono">Teléfono</option>
+          <option value="WhatsApp">WhatsApp</option>
+          <option value="Referido">Referido</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-visita')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addVisita()">Registrar Visita</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nueva Venta / Negocio -->
+<div class="modal-overlay" id="modal-venta">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">💰 Nuevo Negocio</span>
+      <span class="modal-close" onclick="closeModal('modal-venta')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Propiedad *</label>
+        <input id="vt-prop" type="text" placeholder="Ej: Casa Atacama 1234">
+      </div>
+      <div class="form-group">
+        <label>Cliente *</label>
+        <input id="vt-cliente" type="text" placeholder="Nombre del cliente">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo</label>
+          <select id="vt-tipo">
+            <option value="Venta">Venta</option>
+            <option value="Arriendo">Arriendo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Precio (UF)</label>
+          <input id="vt-precio" type="number" placeholder="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Comisión (UF)</label>
+        <input id="vt-comision" type="number" placeholder="0">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-venta')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addVenta()">Registrar Negocio</button>
+    </div>
+  </div>
+</div>
+
+<!-- Perfil -->
+<div class="modal-overlay" id="modal-perfil">
+  <div class="modal" style="width:320px">
+    <div class="modal-header">
+      <span class="modal-title">👤 Mi Perfil</span>
+      <span class="modal-close" onclick="closeModal('modal-perfil')">✕</span>
+    </div>
+    <div class="modal-body" style="text-align:center">
+      <div class="avatar" style="width:64px;height:64px;font-size:24px;margin:0 auto 12px">J</div>
+      <div style="font-weight:700;font-size:16px">Jaime Vargas</div>
+      <div style="color:#888;font-size:12px;margin-top:4px">jaime.vargas@coppergi.cl</div>
+      <div style="color:#c87941;font-size:12px;margin-top:2px;font-weight:600">Agente Inmobiliario</div>
+      <hr style="margin:16px 0">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-secondary" style="width:100%">⚙️ Configuración</button>
+        <button class="btn btn-secondary" style="width:100%">🔒 Cambiar Contraseña</button>
+        <button class="btn" style="background:#e53935;color:#fff;width:100%" onclick="showToast('Sesión cerrada', 'info');closeModal('modal-perfil')">🚪 Cerrar Sesión</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  COPPER GI CRM — DATABASE ENGINE (localStorage)
+//  Schema version: 1.0
+// ════════════════════════════════════════════════════════════
+
+const DB_KEYS = {
+  props:      'crmdb_propiedades',
+  clientes:   'crmdb_clientes',
+  contactos:  'crmdb_contactos',
+  ventas:     'crmdb_ventas',
+  actividades:'crmdb_actividades',
+  meta:       'crmdb_meta'
+};
+
+// ── GENERIC DB HELPERS ──────────────────────────────────────
+function dbGet(key) {
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); }
+  catch { return []; }
+}
+function dbSet(key, data) {
+  localStorage.setItem(key, JSON.stringify(data));
+}
+function dbMeta() {
+  try { return JSON.parse(localStorage.getItem(DB_KEYS.meta) || '{}'); }
+  catch { return {}; }
+}
+function dbMetaSet(obj) {
+  localStorage.setItem(DB_KEYS.meta, JSON.stringify({...dbMeta(), ...obj}));
+}
+function genId(prefix) {
+  return prefix + '-' + Date.now() + '-' + Math.floor(Math.random()*1000);
+}
+function today() {
+  return new Date().toLocaleDateString('es-CL');
+}
+
+// ── SEED (only if DB is empty) ──────────────────────────────
+function dbSeedIfEmpty() {
+  if (dbGet(DB_KEYS.props).length > 0) return; // already seeded
+
+  dbSet(DB_KEYS.props, [
+    { id:'P001', dir:'Av. Atacama 1234, Centro, Copiapó', tipo:'Departamento', estado:'venta', precio:'UF 2.800', m2:'72', dorms:'2', banos:'2', cap:'Jaime V.', fecha: '01/01/2026', notas:'' },
+    { id:'P002', dir:'Los Cóndores 456, Los Cóndores, Copiapó', tipo:'Casa', estado:'arriendo', precio:'UF 28/mes', m2:'150', dorms:'3', banos:'2', cap:'Jaime V.', fecha:'15/01/2026', notas:'' },
+    { id:'P003', dir:'Pedro León Gallo 789, Centro, Copiapó', tipo:'Departamento', estado:'venta', precio:'UF 1.900', m2:'55', dorms:'2', banos:'1', cap:'María S.', fecha:'20/01/2026', notas:'' },
+    { id:'P004', dir:'Balmaceda 321, Balmaceda, Copiapó', tipo:'Casa', estado:'venta', precio:'UF 4.500', m2:'200', dorms:'4', banos:'3', cap:'Pedro A.', fecha:'05/02/2026', notas:'' },
+    { id:'P005', dir:'Chañarcillo 1020, Centro, Copiapó', tipo:'Oficina', estado:'arriendo', precio:'UF 45/mes', m2:'80', dorms:'–', banos:'1', cap:'Jaime V.', fecha:'10/02/2026', notas:'' },
+    { id:'P006', dir:'Merced 456, Centro, Copiapó', tipo:'Local Comercial', estado:'venta', precio:'UF 3.200', m2:'50', dorms:'–', banos:'1', cap:'María S.', fecha:'14/02/2026', notas:'' },
+    { id:'P007', dir:'Villa Chuquicamata 11, Copiapó', tipo:'Casa', estado:'vendida', precio:'UF 6.800', m2:'280', dorms:'5', banos:'4', cap:'Pedro A.', fecha:'01/03/2026', notas:'Vendida - cliente muy satisfecho' },
+    { id:'P008', dir:'Av. Copayapu 890, Copiapó', tipo:'Departamento', estado:'arriendo', precio:'UF 18/mes', m2:'48', dorms:'1', banos:'1', cap:'Jaime V.', fecha:'20/03/2026', notas:'' },
+  ]);
+
+  dbSet(DB_KEYS.clientes, [
+    { id: genId('C'), nombre:'Andrés Fuentes', email:'afuentes@gmail.com', tel:'+56 9 8765 4321', tipo:'Comprador', presupuesto:'UF 3.000', sector:'Centro', notas:'Busca depto 2D en Centro', fecha: today() },
+    { id: genId('C'), nombre:'Carmen López', email:'clopez@empresa.cl', tel:'+56 9 7654 3210', tipo:'Propietario', presupuesto:'', sector:'Balmaceda', notas:'Propietaria de 2 casas', fecha: today() },
+    { id: genId('C'), nombre:'Roberto Sánchez', email:'rsanchez@outlook.com', tel:'+56 9 6543 2109', tipo:'Arrendatario', presupuesto:'UF 30/mes', sector:'Cualquier sector', notas:'', fecha: today() },
+    { id: genId('C'), nombre:'Valentina Torres', email:'vtorres@gmail.com', tel:'+56 9 5432 1098', tipo:'Comprador', presupuesto:'UF 5.000', sector:'Los Cóndores', notas:'Familia con 2 hijos, necesita patio', fecha: today() },
+    { id: genId('C'), nombre:'Felipe Contreras', email:'fcontreras@empresa.cl', tel:'+56 9 4321 0987', tipo:'Vendedor', presupuesto:'', sector:'Centro', notas:'Quiere vender casa familiar', fecha: today() },
+    { id: genId('C'), nombre:'Pamela Rodríguez', email:'prodriguez@gmail.com', tel:'+56 9 3210 9876', tipo:'Propietario', presupuesto:'', sector:'Balmaceda', notas:'Busca administrador para arriendo', fecha: today() },
+    { id: genId('C'), nombre:'Diego Morales', email:'dmorales@outlook.com', tel:'+56 9 2109 8765', tipo:'Comprador', presupuesto:'UF 2.500', sector:'Centro', notas:'Primera vivienda', fecha: today() },
+    { id: genId('C'), nombre:'Javiera Vega', email:'jvega@empresa.cl', tel:'+56 9 1098 7654', tipo:'Arrendatario', presupuesto:'UF 25/mes', sector:'Cualquier sector', notas:'Necesita estacionamiento', fecha: today() },
+  ]);
+
+  dbSet(DB_KEYS.contactos, [
+    { id: genId('V'), fecha:'05/04/2026', cliente:'Andrés Fuentes', propiedad:'P001 – Atacama 1234', origen:'Mercado Libre', estado:'Pendiente', agente:'Jaime V.', notas:'' },
+    { id: genId('V'), fecha:'04/04/2026', cliente:'Carmen López', propiedad:'P003 – León Gallo 789', origen:'Web', estado:'Confirmada', agente:'María S.', notas:'Confirmar a las 11:00 hrs' },
+    { id: genId('V'), fecha:'03/04/2026', cliente:'Roberto Sánchez', propiedad:'P002 – Los Cóndores 456', origen:'WhatsApp', estado:'Realizada', agente:'Jaime V.', notas:'Interesado, pide cotización' },
+    { id: genId('V'), fecha:'02/04/2026', cliente:'Valentina Torres', propiedad:'P004 – Balmaceda 321', origen:'Web', estado:'Pendiente', agente:'Pedro A.', notas:'' },
+    { id: genId('V'), fecha:'01/04/2026', cliente:'Felipe Contreras', propiedad:'P005 – Chañarcillo 1020', origen:'Teléfono', estado:'Cancelada', agente:'Jaime V.', notas:'Reprogramar para la semana siguiente' },
+  ]);
+
+  dbSet(DB_KEYS.ventas, [
+    { id: genId('N'), fecha:'15/03/2026', prop:'Casa Villa Chuquicamata', cliente:'Patricio Urzúa', tipo:'Venta', precio:'UF 6.800', comision:'UF 136', estado:'Cerrada', notas:'' },
+    { id: genId('N'), fecha:'28/02/2026', prop:'Depto Atacama 1234', cliente:'Andrés Fuentes', tipo:'Arriendo', precio:'UF 28/mes', comision:'UF 28', estado:'Activa', notas:'' },
+    { id: genId('N'), fecha:'10/02/2026', prop:'Oficina Chañarcillo 1020', cliente:'Corp. Minera Ltda.', tipo:'Arriendo', precio:'UF 45/mes', comision:'UF 45', estado:'Activa', notas:'' },
+  ]);
+
+  dbSet(DB_KEYS.actividades, [
+    { id: genId('A'), fecha: today(), tipo:'Llamada', descripcion:'Llamada a Andrés Fuentes sobre P001', agente:'Jaime V.' },
+    { id: genId('A'), fecha: today(), tipo:'Visita', descripcion:'Visita programada: Carmen López → P003', agente:'María S.' },
+    { id: genId('A'), fecha: today(), tipo:'Email', descripcion:'Enviada propuesta a Valentina Torres', agente:'Pedro A.' },
+  ]);
+
+  dbMetaSet({ seeded: true, version: '1.0', createdAt: new Date().toISOString() });
+}
+
+// ── LIVE DATA ACCESSORS ─────────────────────────────────────
+function getPropiedades() { return dbGet(DB_KEYS.props); }
+function getClientes()    { return dbGet(DB_KEYS.clientes); }
+function getContactos()   { return dbGet(DB_KEYS.contactos); }
+function getVentas()      { return dbGet(DB_KEYS.ventas); }
+function getActividades() { return dbGet(DB_KEYS.actividades); }
+
+// ── STATS ───────────────────────────────────────────────────
+function getCrmStats() {
+  const props    = getPropiedades();
+  const clts     = getClientes();
+  const vis      = getContactos();
+  const negos    = getVentas();
+  const activas  = props.filter(p => p.estado !== 'vendida' && p.estado !== 'arrendada').length;
+  const vendidas = props.filter(p => p.estado === 'vendida').length;
+  const comAcum  = negos.reduce((acc, n) => {
+    const m = n.comision.match(/[\d.,]+/);
+    return acc + (m ? parseFloat(m[0].replace(',','.')) : 0);
+  }, 0);
+  return { totalProps: props.length, activas, vendidas, totalClientes: clts.length,
+           totalVisitas: vis.length, visitasPendientes: vis.filter(v=>v.estado==='Pendiente').length,
+           totalNegocios: negos.length, comisionAcum: comAcum.toFixed(0) };
+}
+
+// ── CRUD: PROPIEDADES ───────────────────────────────────────
+function savePropCRM(prop) {
+  const data = getPropiedades();
+  const idx = data.findIndex(p => p.id === prop.id);
+  if (idx >= 0) data[idx] = prop; else data.unshift(prop);
+  dbSet(DB_KEYS.props, data);
+}
+function deletePropCRM(id) {
+  dbSet(DB_KEYS.props, getPropiedades().filter(p => p.id !== id));
+}
+
+// ── CRUD: CLIENTES ──────────────────────────────────────────
+function saveClienteCRM(cliente) {
+  const data = getClientes();
+  const idx = data.findIndex(c => c.id === cliente.id);
+  if (idx >= 0) data[idx] = cliente; else data.unshift(cliente);
+  dbSet(DB_KEYS.clientes, data);
+}
+function deleteClienteCRM(id) {
+  dbSet(DB_KEYS.clientes, getClientes().filter(c => c.id !== id));
+}
+
+// ── CRUD: VISITAS / CONTACTOS ───────────────────────────────
+function saveContactoCRM(v) {
+  const data = getContactos();
+  const idx = data.findIndex(x => x.id === v.id);
+  if (idx >= 0) data[idx] = v; else data.unshift(v);
+  dbSet(DB_KEYS.contactos, data);
+}
+function updateContactoEstado(id, estado) {
+  const data = getContactos();
+  const item = data.find(v => v.id === id);
+  if (item) { item.estado = estado; dbSet(DB_KEYS.contactos, data); }
+}
+
+// ── CRUD: VENTAS ────────────────────────────────────────────
+function saveVentaCRM(v) {
+  const data = getVentas();
+  const idx = data.findIndex(x => x.id === v.id);
+  if (idx >= 0) data[idx] = v; else data.unshift(v);
+  dbSet(DB_KEYS.ventas, data);
+}
+
+// ── CRUD: ACTIVIDADES ───────────────────────────────────────
+function logActividad(tipo, descripcion, agente) {
+  const data = getActividades();
+  data.unshift({ id: genId('A'), fecha: today(), tipo, descripcion, agente: agente || 'Sistema' });
+  if (data.length > 100) data.length = 100; // cap at 100
+  dbSet(DB_KEYS.actividades, data);
+}
+
+// ── EXPORT / IMPORT DB ──────────────────────────────────────
+function exportCrmDB() {
+  const dump = {
+    meta: dbMeta(),
+    propiedades: getPropiedades(),
+    clientes: getClientes(),
+    contactos: getContactos(),
+    ventas: getVentas(),
+    actividades: getActividades(),
+    exportedAt: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `coppergi-crm-backup-${today().replace(/\//g,'-')}.json`;
+  a.click();
+  showToast('Base de datos exportada ✓', 'success');
+}
+
+function importCrmDB(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const d = JSON.parse(e.target.result);
+      if (d.propiedades) dbSet(DB_KEYS.props, d.propiedades);
+      if (d.clientes)    dbSet(DB_KEYS.clientes, d.clientes);
+      if (d.contactos)   dbSet(DB_KEYS.contactos, d.contactos);
+      if (d.ventas)      dbSet(DB_KEYS.ventas, d.ventas);
+      if (d.actividades) dbSet(DB_KEYS.actividades, d.actividades);
+      reloadAll();
+      showToast(`Importados: ${(d.propiedades||[]).length} propiedades, ${(d.clientes||[]).length} clientes ✓`, 'success');
+    } catch { showToast('Error al importar archivo', 'error'); }
+  };
+  reader.readAsText(file);
+}
+
+function clearCrmDB() {
+  if (!confirm('¿Borrar TODOS los datos? Esta acción no se puede deshacer.')) return;
+  Object.values(DB_KEYS).forEach(k => localStorage.removeItem(k));
+  dbSeedIfEmpty();
+  reloadAll();
+  showToast('Base de datos reiniciada con datos de ejemplo', 'info');
+}
+
+function reloadAll() {
+  renderPropiedades();
+  renderClientes();
+  renderContactos();
+  renderVentas();
+  updateDashboardStats();
+}
+
+// ── compat shims for existing render functions ──────────────
+// The render functions below reference these as live arrays;
+// we now delegate to DB getters instead.
+Object.defineProperty(window, 'propiedades', { get: getPropiedades, configurable: true });
+Object.defineProperty(window, 'clientes',    { get: getClientes,    configurable: true });
+Object.defineProperty(window, 'contactos',   { get: getContactos,   configurable: true });
+Object.defineProperty(window, 'ventas',      { get: getVentas,      configurable: true });
+
+const docs = [
+  { name:'Contrato Compraventa P007.pdf', icon:'📄', meta:'2.4 MB – 15/03/2026' },
+  { name:'Tasación Prov. 1234.xlsx', icon:'📊', meta:'0.8 MB – 04/04/2026' },
+  { name:'Fotos Los Aromos 456.zip', icon:'🗜️', meta:'45 MB – 03/04/2026' },
+];
+
+// ── RENDER ──
+function renderPropiedades() {
+  const tbody = document.getElementById('propiedades-tbody');
+  tbody.innerHTML = propiedades.map(p => `
+    <tr>
+      <td><strong>${p.id}</strong></td>
+      <td>${p.dir}</td>
+      <td>${p.tipo}</td>
+      <td><span class="status-badge status-${p.estado}">${p.estado.charAt(0).toUpperCase()+p.estado.slice(1)}</span></td>
+      <td class="prop-price">${p.precio}</td>
+      <td>${p.m2}</td>
+      <td>${p.dorms}</td>
+      <td>${p.banos}</td>
+      <td>${p.cap}</td>
+      <td>
+        <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px" onclick="showToast('Abriendo propiedad '+${JSON.stringify(p.id)},'info')">Ver</button>
+        <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;margin-left:4px" onclick="showToast('Editando propiedad','info')">Editar</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderClientes() {
+  const grid = document.getElementById('clientes-grid');
+  const colors = ['#3d5a8a','#7c5cbf','#c87941','#2e7d32','#c62828','#1565c0','#6a1b9a','#00695c'];
+  grid.innerHTML = clientes.map((c,i) => `
+    <div class="cliente-card" onclick="showToast('Abriendo ficha de '+${JSON.stringify(c.nombre)},'info')">
+      <div class="cliente-avatar" style="background:${colors[i%colors.length]}">${c.nombre.charAt(0)}</div>
+      <div class="cliente-info">
+        <div class="name">${c.nombre}</div>
+        <div class="email">✉️ ${c.email}</div>
+        <div class="phone">📞 ${c.tel}</div>
+        <span class="cliente-tag">${c.tipo}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderContactos() {
+  const tbody = document.getElementById('contactos-tbody');
+  const estadoColor = {Pendiente:'#fff3e0',Confirmada:'#e8f5e9',Realizada:'#e3f2fd',Cancelada:'#fce4ec'};
+  const estadoText = {Pendiente:'#e65100',Confirmada:'#2e7d32',Realizada:'#1565c0',Cancelada:'#c62828'};
+  tbody.innerHTML = contactos.map(c => `
+    <tr>
+      <td>${c.fecha}</td>
+      <td>${c.cliente}</td>
+      <td>${c.propiedad}</td>
+      <td>${c.origen}</td>
+      <td><span style="background:${estadoColor[c.estado]||'#eee'};color:${estadoText[c.estado]||'#333'};padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600">${c.estado}</span></td>
+      <td>${c.agente}</td>
+      <td><button class="btn btn-secondary" style="padding:4px 10px;font-size:11px" onclick="showToast('Detalle de solicitud','info')">Ver</button></td>
+    </tr>
+  `).join('');
+}
+
+function renderVentas() {
+  const tbody = document.getElementById('ventas-tbody');
+  tbody.innerHTML = ventas.map(v => `
+    <tr>
+      <td>${v.fecha}</td>
+      <td>${v.prop}</td>
+      <td>${v.cliente}</td>
+      <td>${v.tipo}</td>
+      <td class="prop-price">${v.precio}</td>
+      <td style="color:#43a047;font-weight:700">${v.comision}</td>
+      <td><span class="status-badge" style="background:${v.estado==='Cerrada'?'#e8f5e9':'#e3f2fd'};color:${v.estado==='Cerrada'?'#2e7d32':'#1565c0'}">${v.estado}</span></td>
+    </tr>
+  `).join('');
+}
+
+function renderDocs() {
+  const list = document.getElementById('docs-list');
+  list.innerHTML = docs.map(d => `
+    <div class="doc-item">
+      <div class="doc-icon">${d.icon}</div>
+      <div class="doc-info">
+        <div class="name">${d.name}</div>
+        <div class="meta">${d.meta}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── CHARTS ──
+function initCharts() {
+  const lineOpts = (color) => ({
+    type: 'line',
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { display: false },
+        y: { display: false }
+      },
+      elements: { point: { radius: 0 }, line: { tension: 0.4, borderWidth: 2 } }
+    },
+    data: {
+      labels: ['E','F','M','A','M','J','J','A','S','O','N','D'],
+      datasets: [{
+        data: Array.from({length:12}, () => Math.floor(Math.random()*30)+5),
+        borderColor: color,
+        backgroundColor: color + '33',
+        fill: true
+      }]
+    }
+  });
+
+  new Chart(document.getElementById('chartCaptaciones'), lineOpts('#90ee90'));
+  new Chart(document.getElementById('chartContactos'), lineOpts('#87ceeb'));
+  new Chart(document.getElementById('chartVisitas'), lineOpts('#98fb98'));
+
+  new Chart(document.getElementById('chartCartera'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Casa','Departamento','Oficina','Local','Terreno'],
+      datasets: [{ data: [28,42,12,8,10], backgroundColor:['#c87941','#3d5a8a','#7c5cbf','#2e7d32','#e53935'], borderWidth:0 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      cutout: '65%'
+    }
+  });
+}
+
+// ── MODALS ──
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', (e) => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ── TOAST ──
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// ── TABS ──
+function switchTab(id, clickedTab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (clickedTab) {
+    document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+    clickedTab.classList.add('active');
+  } else {
+    // sync tab indicator
+    const tabMap = {
+      'tab-general':0,'tab-propiedades':1,'tab-contactos':2,
+      'tab-clientes':3,'tab-documentos':4,'tab-ventas':5
+    };
+    const tabs = document.querySelectorAll('.dash-tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    if (tabMap[id] !== undefined) tabs[tabMap[id]].classList.add('active');
+  }
+}
+
+// ── NAV ACTIVE ──
+function setNavActive(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── COMMENT TABS ──
+function setComentTab(el) {
+  document.querySelectorAll('.coment-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── ADD / SAVE RECORDS ──────────────────────────────────────
+function addPropiedad() {
+  const get = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  const dir = get('p-dir');
+  if (!dir) { showToast('Ingresa la dirección de la propiedad', 'error'); return; }
+  const prop = {
+    id: genId('P'),
+    dir,
+    tipo: get('p-tipo') || 'Casa',
+    estado: get('p-estado') || 'venta',
+    precio: (get('p-moneda') || 'UF') + ' ' + (get('p-precio') || '0'),
+    m2: get('p-m2') || '–',
+    dorms: get('p-dorms') || '–',
+    banos: get('p-banos') || '–',
+    cap: get('p-cap') || 'Jaime V.',
+    fecha: today(),
+    notas: get('p-notas') || ''
+  };
+  savePropCRM(prop);
+  logActividad('Captación', `Nueva propiedad: ${prop.dir}`, prop.cap);
+  renderPropiedades();
+  updateDashboardStats();
+  showToast('Propiedad guardada exitosamente ✓', 'success');
+  closeModal('modal-propiedad');
+  // clear form
+  ['p-dir','p-m2','p-precio','p-dorms','p-banos','p-notas'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+}
+
+function addCliente() {
+  const nombre  = document.getElementById('c-nombre').value.trim() || 'Nuevo';
+  const apellido= document.getElementById('c-apellido').value.trim() || 'Cliente';
+  const email   = document.getElementById('c-email').value.trim() || '';
+  const tel     = document.getElementById('c-tel').value.trim() || '';
+  const tipo    = document.getElementById('c-tipo').value;
+  if (!tel && !email) { showToast('Ingresa al menos un dato de contacto', 'error'); return; }
+  const cliente = {
+    id: genId('C'),
+    nombre: nombre + ' ' + apellido,
+    email, tel, tipo,
+    presupuesto: '', sector: '', notas: '',
+    fecha: today()
+  };
+  saveClienteCRM(cliente);
+  logActividad('Cliente', `Nuevo cliente: ${cliente.nombre} (${tipo})`, 'Sistema');
+  renderClientes();
+  updateDashboardStats();
+  showToast('Cliente ' + cliente.nombre + ' agregado ✓', 'success');
+  closeModal('modal-cliente');
+  ['c-nombre','c-apellido','c-email','c-tel'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+}
+
+function addVisita() {
+  const cliente   = document.getElementById('v-cliente')?.value || '';
+  const propiedad = document.getElementById('v-propiedad')?.value || '';
+  const fecha     = document.getElementById('v-fecha')?.value || today();
+  const hora      = document.getElementById('v-hora')?.value || '';
+  const origen    = document.getElementById('v-origen')?.value || 'Web';
+  if (!cliente) { showToast('Selecciona un cliente', 'error'); return; }
+  const visita = {
+    id: genId('V'),
+    fecha: fecha ? new Date(fecha).toLocaleDateString('es-CL') : today(),
+    hora, cliente, propiedad, origen,
+    estado: 'Pendiente',
+    agente: 'Jaime V.',
+    notas: ''
+  };
+  saveContactoCRM(visita);
+  logActividad('Visita', `Visita agendada: ${cliente} → ${propiedad}`, 'Jaime V.');
+  renderContactos();
+  updateDashboardStats();
+  showToast('Visita registrada exitosamente ✓', 'success');
+  closeModal('modal-visita');
+}
+
+function addVenta() {
+  const prop     = document.getElementById('vt-prop')?.value || '';
+  const cliente  = document.getElementById('vt-cliente')?.value || '';
+  const tipo     = document.getElementById('vt-tipo')?.value || 'Venta';
+  const precio   = document.getElementById('vt-precio')?.value || '0';
+  const comision = document.getElementById('vt-comision')?.value || '0';
+  if (!prop || !cliente) { showToast('Completa los campos requeridos', 'error'); return; }
+  const venta = {
+    id: genId('N'),
+    fecha: today(),
+    prop, cliente, tipo,
+    precio: 'UF ' + precio,
+    comision: 'UF ' + comision,
+    estado: 'Activa',
+    notas: ''
+  };
+  saveVentaCRM(venta);
+  logActividad('Negocio', `Nuevo negocio: ${prop} con ${cliente}`, 'Jaime V.');
+  renderVentas();
+  updateDashboardStats();
+  showToast('Negocio registrado ✓', 'success');
+  closeModal('modal-venta');
+}
+
+// ── DASHBOARD STATS ─────────────────────────────────────────
+function updateDashboardStats() {
+  const s = getCrmStats();
+  // KPI cards (update text in existing cards)
+  const kpis = document.querySelectorAll('.kpi-value');
+  if (kpis[0]) kpis[0].textContent = s.activas;
+  if (kpis[1]) kpis[1].textContent = s.totalClientes;
+  if (kpis[2]) kpis[2].textContent = s.visitasPendientes;
+  if (kpis[3]) kpis[3].textContent = 'UF ' + s.comisionAcum;
+}
+
+// ── POPULATE MODAL SELECTS ──────────────────────────────────
+function populateModalSelects() {
+  // Visita: cliente select
+  const vCliente = document.getElementById('v-cliente');
+  if (vCliente) {
+    vCliente.innerHTML = '<option value="">Seleccionar cliente...</option>' +
+      getClientes().map(c=>`<option value="${c.nombre}">${c.nombre}</option>`).join('');
+  }
+  // Visita: propiedad select
+  const vProp = document.getElementById('v-propiedad');
+  if (vProp) {
+    vProp.innerHTML = '<option value="">Seleccionar propiedad...</option>' +
+      getPropiedades().map(p=>`<option value="${p.id} – ${p.dir.substring(0,30)}">${p.id} – ${p.dir.substring(0,30)}</option>`).join('');
+  }
+}
+
+// ── DATE ──
+function updateDate() {
+  const days = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const now = new Date();
+  document.getElementById('currentDate').textContent =
+    `${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]} de ${now.getFullYear()}`;
+}
+
+// ── DB TOOLBAR (Limpiar BD button wire-up) ──────────────────
+// Override the existing clearDB call to use our new engine
+window.clearDB = clearCrmDB;
+
+// ── INIT ────────────────────────────────────────────────────
+dbSeedIfEmpty();          // populate DB on first run
+renderPropiedades();
+renderClientes();
+renderContactos();
+renderVentas();
+renderDocs();
+updateDate();
+updateDashboardStats();
+initCharts();
+populateModalSelects();
+</script>
+</body>
+</html>
