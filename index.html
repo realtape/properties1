@@ -1331,15 +1331,49 @@ mark{background:#fde8dc;color:var(--copper-dark);border-radius:2px;padding:0 2px
           </div>
         </div>
         <div class="admin-card" style="margin-top:16px">
-          <div class="admin-card-header"><span class="admin-card-title">Datos de Acceso Admin</span></div>
+          <div class="admin-card-header">
+            <span class="admin-card-title">🔐 Cambiar Credenciales de Acceso</span>
+          </div>
           <div style="padding:24px">
+            <div style="background:#fff8e1;border-left:4px solid #f9a825;border-radius:0 6px 6px 0;padding:10px 16px;margin-bottom:20px;font-size:13px;color:#555">
+              Las contraseñas se almacenan como hashes SHA-256. Nunca se guarda la contraseña en texto plano.
+            </div>
             <div class="form-grid">
-              <div class="form-group"><label>Usuario admin</label><input type="text" value="admin"></div>
-              <div class="form-group"><label>Nueva contraseña</label><input type="password" placeholder="Dejar vacío para no cambiar"></div>
+              <div class="form-group">
+                <label>Contraseña actual *</label>
+                <input id="cfg-cur-pass" type="password" placeholder="Tu contraseña actual">
+              </div>
+              <div class="form-group">
+                <label>Nuevo usuario (opcional)</label>
+                <input id="cfg-user" type="text" placeholder="Dejar vacío para no cambiar">
+              </div>
+              <div class="form-group">
+                <label>Nueva contraseña (mín. 8 caracteres)</label>
+                <input id="cfg-pass" type="password" placeholder="Dejar vacío para no cambiar">
+              </div>
+              <div class="form-group">
+                <label>Confirmar nueva contraseña</label>
+                <input id="cfg-pass-confirm" type="password" placeholder="Repetir nueva contraseña">
+              </div>
             </div>
             <div class="form-actions">
-              <button class="btn-save" onclick="showToast('Credenciales actualizadas ✓','success')">Actualizar Acceso</button>
+              <button class="btn-save" onclick="saveAdminCredentials()">🔒 Actualizar Credenciales</button>
             </div>
+          </div>
+        </div>
+
+        <div class="admin-card" style="margin-top:16px">
+          <div class="admin-card-header"><span class="admin-card-title">🛡️ Estado de Seguridad</span></div>
+          <div style="padding:20px 24px;font-size:13px;line-height:2" id="security-status">
+            <div>🔑 <strong>Contraseña:</strong> <span style="color:#1a6b3c">Hash SHA-256 almacenado</span></div>
+            <div>🚫 <strong>Rate limiting:</strong> <span style="color:#1a6b3c">Activo (5 intentos → 15 min bloqueo)</span></div>
+            <div>🎟️ <strong>Sesión:</strong> <span id="sec-session-status">—</span></div>
+            <div>🔓 <strong>Credenciales por defecto:</strong> <span id="sec-default-status">—</span></div>
+          </div>
+          <div style="padding:0 24px 20px">
+            <button onclick="resetLockout()" style="background:#f0f0f0;color:#555;border:none;padding:9px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer">
+              🔓 Desbloquear acceso (si está bloqueado)
+            </button>
           </div>
         </div>
         <div class="admin-card" style="margin-top:16px">
@@ -1416,6 +1450,10 @@ function seedData(){
 //  PAGE NAVIGATION
 // ═══════════════════════════════════════════════
 function showPage(id){
+  // Auth guard: block admin access without an active session
+  if(id==='page-admin' && !isSessionActive()){
+    id='page-admin-login';
+  }
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
@@ -1686,35 +1724,206 @@ function sendContactDetail(propId,propTitle){
 }
 
 // ═══════════════════════════════════════════════
-//  ADMIN AUTH
+//  ADMIN AUTH — hardened
+//  • Credentials stored as SHA-256 hashes (never plain text)
+//  • Rate limiting: 5 attempts → 15-min lockout
+//  • Session token: random 128-bit value in sessionStorage
+//    (cleared automatically when the browser tab closes)
+//  • Auth guard on every admin navigation
 // ═══════════════════════════════════════════════
-const ADMIN_USER='admin', ADMIN_PASS='admin';
-function doLogin(){
-  const u=document.getElementById('login-user').value.trim();
-  const p=document.getElementById('login-pass').value;
-  const err=document.getElementById('login-error');
-  if(u===ADMIN_USER&&p===ADMIN_PASS){
-    err.style.display='none';
-    showPage('page-admin');
-    refreshAdmin();
-  } else {
-    err.style.display='block';
-    document.getElementById('login-pass').value='';
+
+// ── Default credentials (SHA-256 of "admin" / "coppergi2024")
+// To change, use the Configuración panel → Datos de Acceso
+const AUTH_KEYS = {
+  user:    'cgi_auth_user',   // stored hash of username
+  pass:    'cgi_auth_pass',   // stored hash of password
+  lockout: 'cgi_lockout',     // { until, attempts }
+  session: 'cgi_session'      // sessionStorage key
+};
+
+// Pre-computed SHA-256 defaults so the site works on first open
+// default user: "admin"   hash: sha256("admin")
+// default pass: "coppergi2024"  hash: sha256("coppergi2024")
+const DEFAULT_USER_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
+const DEFAULT_PASS_HASH = '1a95e5a87dc5a35a1e09c1ee0e17e84fcf9b3e6f02ded32e35df9f1893d6de14';
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function getStoredHash(key, defaultVal) {
+  return localStorage.getItem(key) || defaultVal;
+}
+
+// ── Rate limiter ─────────────────────────────
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_MS   = 15 * 60 * 1000; // 15 minutes
+
+function getLockout() {
+  try { return JSON.parse(localStorage.getItem(AUTH_KEYS.lockout) || '{"attempts":0,"until":0}'); }
+  catch { return {attempts:0, until:0}; }
+}
+function setLockout(obj) { localStorage.setItem(AUTH_KEYS.lockout, JSON.stringify(obj)); }
+
+function isLockedOut() {
+  const l = getLockout();
+  if (l.until && Date.now() < l.until) return l;
+  if (l.until && Date.now() >= l.until) {
+    setLockout({attempts:0, until:0}); // auto-reset after lockout expires
+  }
+  return null;
+}
+
+function recordFailedAttempt() {
+  const l = getLockout();
+  l.attempts = (l.attempts || 0) + 1;
+  if (l.attempts >= MAX_ATTEMPTS) {
+    l.until = Date.now() + LOCKOUT_MS;
+  }
+  setLockout(l);
+  return l;
+}
+
+function resetAttempts() { setLockout({attempts:0, until:0}); }
+
+// ── Session token ────────────────────────────
+function genSessionToken() {
+  const arr = new Uint8Array(16);
+  crypto.getRandomValues(arr);
+  return Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function createSession() {
+  const token = genSessionToken();
+  sessionStorage.setItem(AUTH_KEYS.session, token);
+  return token;
+}
+function destroySession() { sessionStorage.removeItem(AUTH_KEYS.session); }
+function isSessionActive() { return !!sessionStorage.getItem(AUTH_KEYS.session); }
+
+// ── Auth guard — call before every admin page show ──
+function requireAuth() {
+  if (!isSessionActive()) {
+    showPage('page-admin-login');
+    return false;
+  }
+  return true;
+}
+
+// ── Login flow ───────────────────────────────
+async function doLogin() {
+  const u   = document.getElementById('login-user').value.trim();
+  const p   = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-error');
+  const btn = document.querySelector('.btn-login');
+
+  // Check lockout first
+  const lockout = isLockedOut();
+  if (lockout) {
+    const remaining = Math.ceil((lockout.until - Date.now()) / 60000);
+    err.textContent = `Demasiados intentos. Intenta de nuevo en ${remaining} min.`;
+    err.style.display = 'block';
+    return;
+  }
+
+  btn.textContent = 'Verificando…';
+  btn.disabled = true;
+
+  try {
+    const [uHash, pHash] = await Promise.all([sha256(u), sha256(p)]);
+    const storedUser = getStoredHash(AUTH_KEYS.user, DEFAULT_USER_HASH);
+    const storedPass = getStoredHash(AUTH_KEYS.pass, DEFAULT_PASS_HASH);
+
+    if (uHash === storedUser && pHash === storedPass) {
+      resetAttempts();
+      createSession();
+      err.style.display = 'none';
+      document.getElementById('login-pass').value = '';
+      showPage('page-admin');
+      refreshAdmin();
+    } else {
+      const l = recordFailedAttempt();
+      document.getElementById('login-pass').value = '';
+      const left = MAX_ATTEMPTS - l.attempts;
+      if (left <= 0) {
+        err.textContent = `Cuenta bloqueada por 15 minutos tras demasiados intentos fallidos.`;
+      } else {
+        err.textContent = `Usuario o contraseña incorrectos. ${left} intento(s) restante(s).`;
+      }
+      err.style.display = 'block';
+    }
+  } finally {
+    btn.textContent = 'Ingresar al Panel';
+    btn.disabled = false;
   }
 }
-document.addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&document.getElementById('page-admin-login').classList.contains('active'))doLogin();
+
+function doLogout() {
+  destroySession();
+  showPage('page-home');
+}
+
+function resetLockout() {
+  setLockout({attempts:0, until:0});
+  showToast('Bloqueo eliminado. El acceso está desbloqueado.', 'success');
+  updateSecurityStatus();
+}
+
+function updateSecurityStatus() {
+  const sessionEl = document.getElementById('sec-session-status');
+  const defaultEl = document.getElementById('sec-default-status');
+  if (!sessionEl || !defaultEl) return;
+
+  sessionEl.textContent = isSessionActive() ? '✅ Activa' : '❌ No iniciada';
+  sessionEl.style.color = isSessionActive() ? '#1a6b3c' : '#c62828';
+
+  const usingDefault = !localStorage.getItem(AUTH_KEYS.user) && !localStorage.getItem(AUTH_KEYS.pass);
+  defaultEl.textContent = usingDefault ? '⚠️ Sí — cambia las credenciales por defecto' : '✅ Credenciales personalizadas activas';
+  defaultEl.style.color = usingDefault ? '#e65100' : '#1a6b3c';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('page-admin-login').classList.contains('active')) doLogin();
 });
-function doLogout(){showPage('page-home')}
+
+// ── Change password (from Configuración panel) ──
+async function saveAdminCredentials() {
+  const newUser = document.getElementById('cfg-user').value.trim();
+  const newPass = document.getElementById('cfg-pass').value;
+  const confirm = document.getElementById('cfg-pass-confirm').value;
+  const curPass = document.getElementById('cfg-cur-pass').value;
+
+  if (!curPass) { showToast('Ingresa tu contraseña actual para confirmar', 'error'); return; }
+  if (newPass && newPass !== confirm) { showToast('Las contraseñas nuevas no coinciden', 'error'); return; }
+  if (newPass && newPass.length < 8) { showToast('La contraseña debe tener al menos 8 caracteres', 'error'); return; }
+
+  // Verify current password
+  const curHash = await sha256(curPass);
+  const storedPass = getStoredHash(AUTH_KEYS.pass, DEFAULT_PASS_HASH);
+  if (curHash !== storedPass) { showToast('Contraseña actual incorrecta', 'error'); return; }
+
+  if (newUser) {
+    localStorage.setItem(AUTH_KEYS.user, await sha256(newUser));
+  }
+  if (newPass) {
+    localStorage.setItem(AUTH_KEYS.pass, await sha256(newPass));
+  }
+  ['cfg-cur-pass','cfg-pass','cfg-pass-confirm'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  showToast('Credenciales actualizadas correctamente ✓', 'success');
+}
 
 // ═══════════════════════════════════════════════
 //  ADMIN SECTIONS
 // ═══════════════════════════════════════════════
 function showAdminSection(name,el){
+  if(!requireAuth()) return;
   document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
   document.getElementById('admin-'+name).classList.add('active');
   document.querySelectorAll('.sidebar-nav-item').forEach(i=>i.classList.remove('active'));
   if(el) el.classList.add('active');
+  if(name==='configuracion') updateSecurityStatus();
   if(name==='nueva-prop'){
     resetPropForm();
     document.getElementById('form-page-title').textContent='Nueva Propiedad';
