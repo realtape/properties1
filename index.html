@@ -2221,9 +2221,17 @@ function showAdminSection(name,el){
     resetPropForm();
     document.getElementById('form-page-title').textContent='Nueva Propiedad';
   }
-  if(name==='propiedades') renderAdminTable();
-  if(name==='contactos') renderAdminContacts();
-  if(name==='dashboard') refreshAdmin();
+  // If props not loaded yet, load them first then render
+  const renderSection = () => {
+    if(name==='propiedades') renderAdminTable();
+    if(name==='contactos') renderAdminContacts();
+    if(name==='dashboard') refreshAdmin();
+  };
+  if(!window._websiteLoaded && typeof loadPropsFromSupabase === 'function'){
+    loadPropsFromSupabase().then(renderSection);
+  } else {
+    renderSection();
+  }
 }
 
 function refreshAdmin(){
