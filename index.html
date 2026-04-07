@@ -1635,37 +1635,90 @@ mark{background:#fde8dc;color:var(--copper-dark);border-radius:2px;padding:0 2px
 
 <script>
 // ═══════════════════════════════════════════════
-//  DATABASE (localStorage)
+//  DATABASE (Supabase + localStorage fallback)
 // ═══════════════════════════════════════════════
-const DB_KEY = 'coppergi_props';
-const CONTACTS_KEY = 'coppergi_contacts';
+const SUPA_URL2 = 'https://xcpyokvymafndlkyycmn.supabase.co';
+const SUPA_KEY2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjcHlva3Z5bWFmbmRsa3l5Y21uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MjQwNDEsImV4cCI6MjA5MTEwMDA0MX0.zyOjymuuqXXB7XChu0dB04YzmnsIRa9gp8oMuHG76h0';
 
-function getProps(){
-  try{return JSON.parse(localStorage.getItem(DB_KEY)||'[]')}catch{return[]}
-}
-function saveProps(data){
-  localStorage.setItem(DB_KEY,JSON.stringify(data));
-}
-function getContacts(){
-  try{return JSON.parse(localStorage.getItem(CONTACTS_KEY)||'[]')}catch{return[]}
-}
-function saveContacts(data){
-  localStorage.setItem(CONTACTS_KEY,JSON.stringify(data));
+// In-memory cache (populated from Supabase on init)
+let _websiteProps = [];
+let _websiteContacts = [];
+let _websiteLoaded = false;
+
+// Map Supabase propiedades row → website property format
+function mapSupaProp(r) {
+  const operacion = (r.estado === 'arriendo') ? 'arriendo' : 'venta';
+  const moneda = r.moneda || 'UF';
+  const precio = r.precio || 0;
+  const precioStr = moneda === 'UF'
+    ? (operacion === 'arriendo' ? `UF ${precio}/mes` : `UF ${precio.toLocaleString('es-CL')}`)
+    : `$ ${precio.toLocaleString('es-CL')}`;
+  const dirParts = (r.dir || '').split(',');
+  const direccion = r.dir || '';
+  const sector = dirParts.length > 1 ? dirParts.slice(1).join(',').trim().replace(/^Sector\s*/i,'') : '';
+  const ciudad = direccion.toLowerCase().includes('caldera') ? 'Caldera'
+    : direccion.toLowerCase().includes('vallenar') ? 'Vallenar'
+    : direccion.toLowerCase().includes('colina') ? 'Colina'
+    : 'Copiapó';
+  return {
+    id: r.id,
+    codigo: `COD-${r.codigo || r.id}`,
+    titulo: `${r.tipo} en ${ciudad}`,
+    tipo: r.tipo || 'Casa',
+    operacion,
+    precio: precioStr,
+    precio_num: precio,
+    moneda,
+    direccion,
+    sector,
+    ciudad,
+    dorms: r.dorms || 0,
+    banos: r.banos || 0,
+    estac: 0,
+    m2util: r.m2 || 0,
+    m2total: r.m2 || 0,
+    desc: r.notas || '',
+    tags: r.subtipo || '',
+    imagenes: '',
+    estado: 'activa',
+    destacada: precio > 0 && precio < 200,
+    fecha: r.fecha || new Date().toISOString(),
+    captador: r.cap || ''
+  };
 }
 
-// Seed demo data if empty
-function seedData(){
-  if(getProps().length>0) return;
-  const demo=[
-    {id:'p1',codigo:'COD-5261',titulo:'Casa en Caldera',tipo:'Casa',operacion:'venta',precio:'$ 185.000.000',direccion:'Costa del Sol, Calderilla',sector:'Caldera',ciudad:'Caldera',dorms:4,banos:2,estac:1,m2util:114,m2total:222,desc:'Hermosa casa en Costa del Sol con vista al mar. Amplio jardín, piscina y estacionamiento para 2 autos. Ideal para familia.',tags:'Piscina,Jardín,Terraza,Vista al mar',imagenes:'',estado:'activa',destacada:true,fecha:new Date().toISOString()},
-    {id:'p2',codigo:'COD-5230',titulo:'Oficina en Copiapó',tipo:'Oficina',operacion:'arriendo',precio:'UF 170/mes',direccion:'Chañarcillo, entre Vallejos y calle Makenna',sector:'Centro',ciudad:'Copiapó',dorms:0,banos:3,estac:0,m2util:120,m2total:120,desc:'Modernas oficinas en el corazón de Copiapó. Acceso por rampa, 3 baños, aire acondicionado central y red de datos.',tags:'Aire acondicionado,Red de datos,Acceso discapacitados',imagenes:'',estado:'activa',destacada:true,fecha:new Date().toISOString()},
-    {id:'p3',codigo:'COD-5200',titulo:'Local Comercial en Copiapó',tipo:'Local Comercial',operacion:'arriendo',precio:'UF 30/mes',direccion:'Ruta 30, Acceso Sur',sector:'Acceso Sur',ciudad:'Copiapó',dorms:0,banos:1,estac:2,m2util:55,m2total:55,desc:'Local comercial de alto tráfico en Acceso Sur. Ideal para comercio minorista, oficina o bodega.',tags:'Alto tráfico,Vitrina exterior,Bodega',imagenes:'',estado:'activa',destacada:false,fecha:new Date().toISOString()},
-    {id:'p4',codigo:'COD-5185',titulo:'Casa en Copiapó Centro',tipo:'Casa',operacion:'venta',precio:'UF 3.500',direccion:'Pedro León Gallo 456, Centro',sector:'Centro',ciudad:'Copiapó',dorms:3,banos:2,estac:1,m2util:95,m2total:120,desc:'Cómoda casa de dos pisos en el corazón de Copiapó. Cerca de servicios, colegios y transporte público.',tags:'Patio,Estacionamiento,Amplia cocina',imagenes:'',estado:'activa',destacada:false,fecha:new Date().toISOString()},
-    {id:'p5',codigo:'COD-5186',titulo:'Departamento en Balmaceda',tipo:'Departamento',operacion:'arriendo',precio:'UF 12/mes',direccion:'Atacama 789, Balmaceda',sector:'Balmaceda',ciudad:'Copiapó',dorms:2,banos:1,estac:0,m2util:52,m2total:52,desc:'Acogedor departamento amoblado en sector Balmaceda. Luminoso, 2 dormitorios, cocina equipada.',tags:'Amoblado,Luminoso,Internet incluido',imagenes:'',estado:'activa',destacada:false,fecha:new Date().toISOString()},
-    {id:'p6',codigo:'COD-5302',titulo:'Oficina Premium en Centro',tipo:'Oficina',operacion:'arriendo',precio:'UF 85/mes',direccion:'Chañarcillo 321, Centro',sector:'Centro',ciudad:'Copiapó',dorms:0,banos:2,estac:1,m2util:80,m2total:80,desc:'Elegante oficina con acabados premium. Sala de reuniones, recepción y dos baños privados.',tags:'Sala de reuniones,Recepción,Arco de seguridad',imagenes:'',estado:'activa',destacada:true,fecha:new Date().toISOString()},
-  ];
-  saveProps(demo);
+function getProps(){ return _websiteProps; }
+function saveProps(data){ _websiteProps = data; }
+function getContacts(){ return _websiteContacts; }
+function saveContacts(data){ _websiteContacts = data; }
+
+// Load all properties from Supabase (with pagination to get all 88+)
+async function loadPropsFromSupabase() {
+  try {
+    let allRows = [];
+    let from = 0;
+    const pageSize = 100;
+    while (true) {
+      const resp = await fetch(
+        `${SUPA_URL2}/rest/v1/propiedades?select=*&order=codigo.desc&limit=${pageSize}&offset=${from}`,
+        { headers: { 'apikey': SUPA_KEY2, 'Authorization': `Bearer ${SUPA_KEY2}` } }
+      );
+      const rows = await resp.json();
+      if (!Array.isArray(rows) || rows.length === 0) break;
+      allRows = allRows.concat(rows);
+      if (rows.length < pageSize) break;
+      from += pageSize;
+    }
+    _websiteProps = allRows.map(mapSupaProp);
+    _websiteLoaded = true;
+  } catch(e) {
+    console.error('Supabase load error:', e);
+    _websiteLoaded = true; // fallback to empty
+  }
 }
+
+// Seed demo data — no-op now (data comes from Supabase)
+function seedData(){ /* data loaded from Supabase */ }
 
 // ═══════════════════════════════════════════════
 //  PAGE NAVIGATION
@@ -2508,10 +2561,16 @@ function showToast(msg,type='info'){
 }
 
 // ═══════════════════════════════════════════════
-//  INIT
+//  INIT — load from Supabase then render
 // ═══════════════════════════════════════════════
-seedData();
-renderPublicGrid();
+(async () => {
+  // Show loading state in prop grid
+  const grid = document.getElementById('prop-grid');
+  if (grid) grid.innerHTML = '<div style="text-align:center;padding:40px;color:#888;grid-column:1/-1">Cargando propiedades...</div>';
+  await loadPropsFromSupabase();
+  renderPublicGrid();
+})();
+
 
 // ═══════════════════════════════════════════════
 //  FSBO — PUBLICAR POR DUEÑO
