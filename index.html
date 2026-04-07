@@ -531,74 +531,149 @@ footer{
 }
 
 /* Admin Layout */
-.admin-layout{
-  display:flex;min-height:100vh;
-  background:#f4f6f8;
-}
-.admin-sidebar{
-  width:240px;flex-shrink:0;
-  background:#1e2430;
-  display:flex;flex-direction:column;
-  position:sticky;top:0;height:100vh;overflow-y:auto;
-}
-.sidebar-brand{
-  padding:20px;border-bottom:1px solid rgba(255,255,255,.08);
-  display:flex;align-items:center;gap:10px;
-}
-.sidebar-brand .icon{
-  width:38px;height:38px;border-radius:8px;
-  background:var(--copper);
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;font-weight:900;color:#fff;
-}
-.sidebar-brand .name{color:#fff;font-weight:700;font-size:14px}
-.sidebar-brand .role{color:rgba(255,255,255,.5);font-size:11px}
-.sidebar-nav{padding:16px 0;flex:1}
-.sidebar-nav-item{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 20px;
-  color:rgba(255,255,255,.6);
-  font-size:13px;font-weight:500;
-  cursor:pointer;
-  transition:all .2s;
-  border-left:3px solid transparent;
-}
-.sidebar-nav-item:hover{color:#fff;background:rgba(255,255,255,.05)}
-.sidebar-nav-item.active{color:#fff;background:rgba(181,69,27,.2);border-left-color:var(--copper)}
-.sidebar-nav-item .nav-icon{font-size:16px;width:20px;text-align:center}
-.sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.08)}
-.sidebar-logout{
-  display:flex;align-items:center;gap:10px;
-  color:rgba(255,255,255,.5);font-size:13px;
-  cursor:pointer;transition:color .2s;
-}
-.sidebar-logout:hover{color:#e53935}
+/* ── ADMIN LAYOUT (prop360 style) ── */
+.admin-layout{display:flex;flex-direction:column;min-height:100vh;background:#f0f2f5}
 
-.admin-content{flex:1;padding:28px;overflow-y:auto}
-.admin-topbar{
+/* Top header bar */
+.admin-header{
+  background:#fff;border-bottom:1px solid #e0e0e0;
   display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:24px;
+  padding:0 20px;height:56px;position:sticky;top:0;z-index:200;
+  box-shadow:0 1px 4px rgba(0,0,0,.07);
 }
-.admin-page-title{font-size:22px;font-weight:700;color:var(--text)}
-.admin-page-title span{color:var(--muted);font-weight:400;font-size:16px;margin-left:8px}
+.admin-header-left{display:flex;align-items:center;gap:14px}
+.admin-logo-box{
+  width:38px;height:38px;border-radius:6px;background:#1a1a1a;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:17px;color:var(--copper);
+}
+.admin-header-brand{font-size:15px;font-weight:700;color:#1a1a1a}
+.admin-header-right{display:flex;align-items:center;gap:18px}
+.admin-uf-info{text-align:right;line-height:1.3}
+.admin-uf-info .ad-date{font-size:12px;color:var(--copper);font-weight:600}
+.admin-uf-info .ad-uf{font-size:12px;color:#666}
+.admin-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--copper);color:#fff;
+  font-weight:700;font-size:13px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.admin-logout-btn{
+  font-size:12px;color:#888;cursor:pointer;text-decoration:none;
+  border:1px solid #e0e0e0;padding:5px 12px;border-radius:4px;
+  transition:all .2s;
+}
+.admin-logout-btn:hover{color:#e53935;border-color:#e53935}
 
-/* Admin KPIs */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px}
+/* Top nav */
+.admin-topnav{
+  background:#2d3240;display:flex;align-items:center;
+  padding:0 20px;height:42px;position:sticky;top:56px;z-index:199;
+}
+.admin-topnav-item{
+  color:rgba(255,255,255,.65);font-size:13px;font-weight:500;
+  padding:0 14px;height:42px;display:flex;align-items:center;gap:5px;
+  cursor:pointer;transition:background .2s,color .2s;white-space:nowrap;
+  position:relative;
+}
+.admin-topnav-item:hover,.admin-topnav-item.active{background:#1e2230;color:#fff}
+.admin-topnav-sep{color:rgba(255,255,255,.2);font-size:18px;padding:0 2px}
+
+/* Content area */
+.admin-content{flex:1;padding:20px 24px;overflow-y:auto}
+
+/* Dashboard tabs */
+.admin-dash-tabs{
+  display:flex;border-bottom:2px solid #e0e0e0;
+  margin-bottom:20px;gap:0;
+}
+.admin-dash-tab{
+  padding:9px 18px;font-size:13px;font-weight:600;
+  color:#888;cursor:pointer;border-bottom:2px solid transparent;
+  margin-bottom:-2px;transition:color .2s,border-color .2s;white-space:nowrap;
+}
+.admin-dash-tab:hover{color:var(--copper)}
+.admin-dash-tab.active{color:var(--copper);border-bottom-color:var(--copper)}
+
+/* Dashboard panels grid */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.dash-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.dash-grid-side{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.dash-panel{
+  background:#fff;border-radius:8px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  overflow:hidden;
+}
+.dash-panel-hdr{
+  background:#2d3240;color:#fff;
+  padding:10px 16px;font-size:12px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.dash-panel-hdr a{color:rgba(255,255,255,.7);font-size:11px;text-decoration:none;cursor:pointer}
+.dash-panel-hdr a:hover{color:#fff}
+.dash-panel-body{padding:14px 16px}
+.dash-stat-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.dash-stat-num{
+  font-size:28px;font-weight:700;
+  display:flex;align-items:baseline;gap:6px;
+}
+.dash-stat-num.amber{color:#e65100}
+.dash-stat-num.green{color:#2e7d32}
+.dash-stat-num.blue{color:#1565c0}
+.dash-stat-label{font-size:12px;color:#888;margin-top:2px}
+.dash-stat-sub{font-size:11px;color:#aaa;margin-top:1px}
+.dash-bullet{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px}
+.dash-bullet.orange{background:#e65100}
+.dash-bullet.green{background:#43a047}
+.dash-bullet.blue{background:#1976d2}
+.dash-bullet.red{background:#e53935}
+.dash-divider{border:none;border-top:1px solid #f0f0f0;margin:10px 0}
+.dash-link-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 0;border-bottom:1px solid #f5f5f5;font-size:13px;
+}
+.dash-link-row:last-child{border-bottom:none}
+.dash-link-row .count{
+  background:#e0e0e0;color:#555;border-radius:12px;
+  padding:2px 10px;font-size:11px;font-weight:700;
+}
+.dash-link-row .count.orange{background:#fde8dc;color:var(--copper)}
+.dash-link-row .count.green{background:#e8f5e9;color:#2e7d32}
+
+/* Reportes bar */
+.report-bar-wrap{padding:12px 16px}
+.report-bar-label{font-size:12px;color:#666;margin-bottom:4px;display:flex;justify-content:space-between}
+.report-bar{height:22px;border-radius:3px;overflow:hidden;display:flex;margin-bottom:10px}
+.report-bar-venta{background:#1565c0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700}
+.report-bar-arriendo{background:#2e7d32;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700}
+.report-mini-charts{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 16px}
+.report-chart-box{border:1px solid #eee;border-radius:6px;padding:10px}
+.report-chart-title{font-size:11px;color:#888;font-weight:700;margin-bottom:8px;text-transform:uppercase}
+
+/* Tareas */
+.tarea-row{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:8px 0;border-bottom:1px solid #f5f5f5;font-size:13px;
+}
+.tarea-row:last-child{border-bottom:none}
+.tarea-dot{width:10px;height:10px;border-radius:50%;margin-top:3px;flex-shrink:0}
+.tarea-date{font-size:11px;color:var(--copper);font-weight:700;margin-bottom:6px}
+
+/* Admin KPIs (kept for Propiedades tab) */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px}
 .kpi-card{
-  background:#fff;border-radius:10px;padding:20px;
-  box-shadow:var(--shadow);
-  display:flex;align-items:center;gap:14px;
+  background:#fff;border-radius:8px;padding:16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  display:flex;align-items:center;gap:12px;
 }
-.kpi-icon{
-  width:48px;height:48px;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;font-size:22px;
-}
+.kpi-icon{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
 .kpi-icon.orange{background:#fde8dc}
 .kpi-icon.green{background:#e8f5e9}
 .kpi-icon.blue{background:#e3f2fd}
 .kpi-icon.purple{background:#f3e5f5}
-.kpi-val{font-size:26px;font-weight:700;color:var(--text)}
-.kpi-label{font-size:12px;color:var(--muted)}
+.kpi-val{font-size:24px;font-weight:700;color:var(--text)}
+.kpi-label{font-size:11px;color:var(--muted)}
 
 /* Admin Table */
 .admin-card{background:#fff;border-radius:10px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:24px}
@@ -649,6 +724,8 @@ tr:hover td{background:#fafbfc}
 /* Admin Form */
 .admin-section{display:none}
 .admin-section.active{display:block}
+.dash-tab-panel{display:none}
+.dash-tab-panel.active{display:block}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
 .form-group{margin-bottom:0}
@@ -749,7 +826,7 @@ mark{background:#fde8dc;color:var(--copper-dark);border-radius:2px;padding:0 2px
   .properties-section,.why-section{padding:24px 16px}
   .filter-bar{padding:12px 16px}
   .detail-body{grid-template-columns:1fr}
-  .admin-sidebar{display:none}
+  .admin-topnav{flex-wrap:wrap;height:auto;padding:6px 12px;gap:4px}
   .footer-grid{grid-template-columns:1fr 1fr}
   .form-grid,.form-grid-3{grid-template-columns:1fr}
 }
@@ -1042,106 +1119,249 @@ mark{background:#fde8dc;color:var(--copper-dark);border-radius:2px;padding:0 2px
 <!-- ═══════════════════════ ADMIN PANEL ═══════════════════════ -->
 <div id="page-admin" class="page">
   <div class="admin-layout">
-    <!-- Sidebar -->
-    <aside class="admin-sidebar">
-      <div class="sidebar-brand">
-        <div class="icon">C</div>
-        <div>
-          <div class="name">Copper GI</div>
-          <div class="role">Administrador</div>
-        </div>
-      </div>
-      <nav class="sidebar-nav">
-        <div class="sidebar-nav-item active" onclick="showAdminSection('dashboard',this)">
-          <span class="nav-icon">📊</span> Dashboard
-        </div>
-        <div class="sidebar-nav-item" onclick="showAdminSection('propiedades',this)">
-          <span class="nav-icon">🏠</span> Propiedades
-        </div>
-        <div class="sidebar-nav-item" onclick="showAdminSection('nueva-prop',this)">
-          <span class="nav-icon">➕</span> Nueva Propiedad
-        </div>
-        <div class="sidebar-nav-item" onclick="showAdminSection('contactos',this)">
-          <span class="nav-icon">📬</span> Consultas
-        </div>
-        <div class="sidebar-nav-item" onclick="showAdminSection('configuracion',this)">
-          <span class="nav-icon">⚙️</span> Configuración
-        </div>
-        <div class="sidebar-nav-item" onclick="showPage('page-home')">
-          <span class="nav-icon">🌐</span> Ver Sitio Web
-        </div>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="sidebar-logout" onclick="doLogout()">
-          <span>🚪</span> Cerrar Sesión
-        </div>
-      </div>
-    </aside>
 
-    <!-- Content -->
+    <!-- TOP HEADER -->
+    <header class="admin-header">
+      <div class="admin-header-left">
+        <div class="admin-logo-box">C</div>
+        <span class="admin-header-brand">Copper GI</span>
+      </div>
+      <div class="admin-header-right">
+        <div class="admin-uf-info">
+          <div class="ad-date" id="admin-date-display">—</div>
+          <div class="ad-uf" id="admin-uf-display">UF —</div>
+        </div>
+        <div class="admin-avatar">J</div>
+        <span class="admin-logout-btn" onclick="doLogout()">Cerrar Sesión</span>
+      </div>
+    </header>
+
+    <!-- TOP NAV -->
+    <nav class="admin-topnav">
+      <div class="admin-topnav-item active" onclick="showAdminSection('dashboard',this)">📊 Inicio</div>
+      <div class="admin-topnav-item" onclick="showAdminSection('propiedades',this)">🏠 Propiedades</div>
+      <div class="admin-topnav-item" onclick="showAdminSection('nueva-prop',this)">➕ Nueva Captación</div>
+      <div class="admin-topnav-item" onclick="showAdminSection('contactos',this)">📬 Consultas</div>
+      <div class="admin-topnav-item" onclick="showAdminSection('configuracion',this)">⚙️ Configuración</div>
+      <div class="admin-topnav-item" onclick="showPage('page-home')">🌐 Ver Sitio</div>
+    </nav>
+
+    <!-- CONTENT -->
     <div class="admin-content">
 
-      <!-- DASHBOARD -->
+      <!-- ══ DASHBOARD ══ -->
       <div id="admin-dashboard" class="admin-section active">
-        <div class="admin-topbar">
-          <div class="admin-page-title">Dashboard <span>General</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <h2 style="font-size:20px;font-weight:700;color:#1a1a1a">Paneles de control</h2>
           <button class="btn-add" onclick="showAdminSection('nueva-prop',document.querySelector('[onclick*=nueva-prop]'))">+ Nueva Propiedad</button>
         </div>
-        <div class="kpi-grid">
-          <div class="kpi-card">
-            <div class="kpi-icon orange">🏠</div>
-            <div><div class="kpi-val" id="kpi-total">0</div><div class="kpi-label">Total Propiedades</div></div>
+
+        <!-- TABS -->
+        <div class="admin-dash-tabs">
+          <div class="admin-dash-tab active" onclick="switchDashTab('tab-general',this)">General</div>
+          <div class="admin-dash-tab" onclick="switchDashTab('tab-propiedades',this)">Propiedades</div>
+          <div class="admin-dash-tab" onclick="switchDashTab('tab-contactos',this)">Contactos</div>
+          <div class="admin-dash-tab" onclick="switchDashTab('tab-clientes',this)">Clientes</div>
+          <div class="admin-dash-tab" onclick="switchDashTab('tab-documentos',this)">Documentos</div>
+          <div class="admin-dash-tab" onclick="switchDashTab('tab-ventas',this)">Ventas</div>
+        </div>
+
+        <!-- TAB: GENERAL -->
+        <div id="tab-general" class="dash-tab-panel active">
+
+          <!-- Row 1: Captaciones | Modificaciones | Avisos -->
+          <div class="dash-grid">
+            <div class="dash-panel">
+              <div class="dash-panel-hdr">Captaciones</div>
+              <div class="dash-panel-body">
+                <div class="dash-stat-row">
+                  <div>
+                    <div class="dash-stat-num amber"><span id="d-no-disp">0</span></div>
+                    <div class="dash-stat-label">No disponibles</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div class="dash-stat-num amber"><span id="d-ptes-vis">0</span></div>
+                    <div class="dash-stat-label">Ptes. visación</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div class="dash-stat-num" style="color:#aaa">–</div>
+                    <div class="dash-stat-label">Rechazadas</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="dash-panel">
+              <div class="dash-panel-hdr">Modificaciones</div>
+              <div class="dash-panel-body">
+                <div class="dash-stat-row">
+                  <div>
+                    <div class="dash-stat-num" style="color:#e53935"><span id="d-mod-precio">0</span></div>
+                    <div class="dash-stat-label">Precio</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div class="dash-stat-num" style="color:#aaa">–</div>
+                    <div class="dash-stat-label">Pasivas</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="dash-panel">
+              <div class="dash-panel-hdr">Avisos</div>
+              <div class="dash-panel-body">
+                <div class="dash-link-row">
+                  <span><span class="dash-bullet orange"></span>Clientes con novedades</span>
+                  <span class="count orange" id="d-clientes-nov">0</span>
+                </div>
+                <div class="dash-link-row">
+                  <span><span class="dash-bullet red"></span>Propiedades sin info</span>
+                  <span class="count orange" id="d-props-sin-info">0</span>
+                </div>
+                <div class="dash-link-row">
+                  <span><span class="dash-bullet green"></span>Activas / Visibles</span>
+                  <span class="count green" id="d-activas-count">0</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="kpi-card">
-            <div class="kpi-icon orange">🏷️</div>
-            <div><div class="kpi-val" id="kpi-venta">0</div><div class="kpi-label">En Venta</div></div>
+
+          <!-- Row 2: Solicitudes Visita | Contactos | Tareas -->
+          <div class="dash-grid">
+            <div class="dash-panel">
+              <div class="dash-panel-hdr">Solicitudes de Visita <a onclick="showAdminSection('contactos',document.querySelector('[onclick*=contactos]'))">IR ▶</a></div>
+              <div class="dash-panel-body">
+                <div style="font-size:11px;color:#aaa;margin-bottom:8px">Últimos 30 días</div>
+                <div class="dash-stat-row">
+                  <div>
+                    <div class="dash-stat-num amber"><span id="d-vis-pendientes">0</span></div>
+                    <div class="dash-stat-label">Sin confirmar</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div class="dash-stat-num green"><span id="d-vis-confirmadas">0</span></div>
+                    <div class="dash-stat-label">Confirmadas</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="dash-panel">
+              <div class="dash-panel-hdr">Contactos <a onclick="showAdminSection('contactos',document.querySelector('[onclick*=contactos]'))">IR ▶</a></div>
+              <div class="dash-panel-body">
+                <div style="font-size:11px;color:#aaa;margin-bottom:8px">Últimos 30 días</div>
+                <div class="dash-stat-num blue" style="font-size:36px"><span id="d-contactos-total">0</span></div>
+                <div class="dash-stat-label">Recibidos</div>
+              </div>
+            </div>
+            <div class="dash-panel">
+              <div class="dash-panel-hdr">Tareas</div>
+              <div class="dash-panel-body" id="d-tareas-list">
+                <div style="color:#aaa;font-size:12px;text-align:center;padding:12px 0">Sin tareas pendientes</div>
+              </div>
+            </div>
           </div>
-          <div class="kpi-card">
-            <div class="kpi-icon green">🔑</div>
-            <div><div class="kpi-val" id="kpi-arriendo">0</div><div class="kpi-label">En Arriendo</div></div>
+
+          <!-- Row 3: Reportes (wide) | Últimos comentarios -->
+          <div class="dash-grid-side">
+            <div class="dash-panel">
+              <div class="dash-panel-hdr">Reportes <a>IR A METRICS ▶</a></div>
+              <div class="report-bar-wrap">
+                <div class="report-bar-label">
+                  <span><strong id="d-rep-venta">0</strong> prop. en VENTA</span>
+                  <span><strong id="d-rep-arriendo">0</strong> prop. en ARRIENDO</span>
+                </div>
+                <div class="report-bar">
+                  <div class="report-bar-venta" id="d-bar-venta" style="width:50%">Venta</div>
+                  <div class="report-bar-arriendo" id="d-bar-arriendo" style="width:50%">Arriendo</div>
+                </div>
+              </div>
+              <div class="report-mini-charts">
+                <div class="report-chart-box">
+                  <div class="report-chart-title">Captaciones</div>
+                  <canvas id="chartCaptaciones2" height="70"></canvas>
+                </div>
+                <div class="report-chart-box">
+                  <div class="report-chart-title">Cartera por tipo</div>
+                  <canvas id="chartCartera2" height="70"></canvas>
+                </div>
+                <div class="report-chart-box">
+                  <div class="report-chart-title">Contactos</div>
+                  <canvas id="chartContactos2" height="70"></canvas>
+                </div>
+                <div class="report-chart-box">
+                  <div class="report-chart-title">Órdenes de visita</div>
+                  <canvas id="chartVisitas2" height="70"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="dash-panel">
+              <div class="dash-panel-hdr">Últimos Comentarios</div>
+              <div class="dash-panel-body">
+                <div style="display:flex;gap:8px;margin-bottom:10px">
+                  <button style="background:#eee;border:none;border-radius:4px;padding:4px 12px;font-size:12px;cursor:pointer">Solo mis propiedades</button>
+                  <button style="background:var(--copper);color:#fff;border:none;border-radius:4px;padding:4px 12px;font-size:12px;cursor:pointer">Todos</button>
+                </div>
+                <div id="d-comentarios-list">
+                  <div style="color:#aaa;font-size:12px;text-align:center;padding:12px 0">No hay comentarios registrados</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="kpi-card">
+        </div><!-- end tab-general -->
+
+        <!-- TAB: PROPIEDADES (mini version) -->
+        <div id="tab-propiedades" class="dash-tab-panel" style="display:none">
+          <div class="kpi-grid">
+            <div class="kpi-card"><div class="kpi-icon orange">🏠</div><div><div class="kpi-val" id="kpi-total">0</div><div class="kpi-label">Total Propiedades</div></div></div>
+            <div class="kpi-card"><div class="kpi-icon orange">🏷️</div><div><div class="kpi-val" id="kpi-venta">0</div><div class="kpi-label">En Venta</div></div></div>
+            <div class="kpi-card"><div class="kpi-icon green">🔑</div><div><div class="kpi-val" id="kpi-arriendo">0</div><div class="kpi-label">En Arriendo</div></div></div>
+            <div class="kpi-card"><div class="kpi-icon green">✅</div><div><div class="kpi-val" id="kpi-activas">0</div><div class="kpi-label">Activas</div></div></div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <span class="admin-card-title">Propiedades Recientes</span>
+              <button class="btn-add" onclick="showAdminSection('propiedades',document.querySelector('[onclick*=propiedades]'))">Ver todas</button>
+            </div>
+            <div class="admin-table-wrap">
+              <table><thead><tr><th>Img</th><th>Código</th><th>Título</th><th>Operación</th><th>Precio</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody id="dash-recent-tbody"></tbody></table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: CONTACTOS -->
+        <div id="tab-contactos" class="dash-tab-panel" style="display:none">
+          <div class="kpi-card" style="margin-bottom:16px;max-width:300px">
             <div class="kpi-icon blue">📬</div>
-            <div><div class="kpi-val" id="kpi-consultas">0</div><div class="kpi-label">Consultas</div></div>
+            <div><div class="kpi-val" id="kpi-consultas">0</div><div class="kpi-label">Total Consultas recibidas</div></div>
           </div>
-          <div class="kpi-card">
-            <div class="kpi-icon green">✅</div>
-            <div><div class="kpi-val" id="kpi-activas">0</div><div class="kpi-label">Activas / Visibles</div></div>
-          </div>
-        </div>
-
-        <!-- Recent properties table -->
-        <div class="admin-card">
-          <div class="admin-card-header">
-            <span class="admin-card-title">Propiedades Recientes</span>
-            <button class="btn-add" onclick="showAdminSection('propiedades',document.querySelector('[onclick*=propiedades]'))">Ver todas</button>
-          </div>
-          <div class="admin-table-wrap">
-            <table>
-              <thead><tr><th>Img</th><th>Código</th><th>Título</th><th>Operación</th><th>Precio</th><th>Estado</th><th>Acciones</th></tr></thead>
-              <tbody id="dash-recent-tbody"></tbody>
-            </table>
+          <div class="admin-card">
+            <div class="admin-card-header"><span class="admin-card-title">Últimas Consultas</span></div>
+            <div class="admin-table-wrap">
+              <table><thead><tr><th>Fecha</th><th>Nombre</th><th>Email</th><th>Teléfono</th><th>Propiedad</th><th>Mensaje</th></tr></thead>
+              <tbody id="dash-contacts-tbody"></tbody></table>
+            </div>
           </div>
         </div>
 
-        <!-- Recent Contacts -->
-        <div class="admin-card">
-          <div class="admin-card-header">
-            <span class="admin-card-title">Últimas Consultas</span>
-          </div>
-          <div class="admin-table-wrap">
-            <table>
-              <thead><tr><th>Fecha</th><th>Nombre</th><th>Email</th><th>Teléfono</th><th>Propiedad</th><th>Mensaje</th></tr></thead>
-              <tbody id="dash-contacts-tbody"></tbody>
-            </table>
-          </div>
+        <!-- TAB: CLIENTES -->
+        <div id="tab-clientes" class="dash-tab-panel" style="display:none">
+          <div style="color:#aaa;text-align:center;padding:40px;font-size:14px">Módulo de Clientes próximamente</div>
         </div>
-      </div>
 
-      <!-- PROPIEDADES LIST -->
+        <!-- TAB: DOCUMENTOS -->
+        <div id="tab-documentos" class="dash-tab-panel" style="display:none">
+          <div style="color:#aaa;text-align:center;padding:40px;font-size:14px">No hay documentos en la nube</div>
+        </div>
+
+        <!-- TAB: VENTAS -->
+        <div id="tab-ventas" class="dash-tab-panel" style="display:none">
+          <div style="color:#aaa;text-align:center;padding:40px;font-size:14px">Módulo de Ventas próximamente</div>
+        </div>
+
+      </div><!-- end admin-dashboard -->
+
+      <!-- ══ PROPIEDADES LIST ══ -->
       <div id="admin-propiedades" class="admin-section">
-        <div class="admin-topbar">
-          <div class="admin-page-title">Propiedades <span id="admin-prop-count"></span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <h2 style="font-size:20px;font-weight:700">Propiedades <span id="admin-prop-count" style="font-size:14px;color:#888;font-weight:400"></span></h2>
           <button class="btn-add" onclick="showAdminSection('nueva-prop',document.querySelector('[onclick*=nueva-prop]'))">+ Nueva Propiedad</button>
         </div>
         <div class="admin-card" style="padding:14px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:center">
@@ -1918,11 +2138,19 @@ async function saveAdminCredentials() {
 // ═══════════════════════════════════════════════
 //  ADMIN SECTIONS
 // ═══════════════════════════════════════════════
+// ── Dashboard tab switching ──────────────────────────────────
+function switchDashTab(tabId,el){
+  document.querySelectorAll('.dash-tab-panel').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.admin-dash-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(tabId).style.display='block';
+  if(el) el.classList.add('active');
+}
+
 function showAdminSection(name,el){
   if(!requireAuth()) return;
   document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
   document.getElementById('admin-'+name).classList.add('active');
-  document.querySelectorAll('.sidebar-nav-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.admin-topnav-item').forEach(i=>i.classList.remove('active'));
   if(el) el.classList.add('active');
   if(name==='configuracion') updateSecurityStatus();
   if(name==='nueva-prop'){
@@ -1937,16 +2165,67 @@ function showAdminSection(name,el){
 function refreshAdmin(){
   const props=getProps();
   const contacts=getContacts();
-  // KPIs
-  document.getElementById('kpi-total').textContent=props.length;
-  document.getElementById('kpi-venta').textContent=props.filter(p=>p.operacion==='venta'||p.operacion==='venta-arriendo').length;
-  document.getElementById('kpi-arriendo').textContent=props.filter(p=>p.operacion==='arriendo'||p.operacion==='venta-arriendo').length;
-  document.getElementById('kpi-consultas').textContent=contacts.length;
-  document.getElementById('kpi-activas').textContent=props.filter(p=>p.estado==='activa'||p.estado==='destacada').length;
-  // Recent props
+  const venta=props.filter(p=>p.operacion==='venta'||p.operacion==='venta-arriendo').length;
+  const arriendo=props.filter(p=>p.operacion==='arriendo'||p.operacion==='venta-arriendo').length;
+  const activas=props.filter(p=>p.estado==='activa'||p.estado==='destacada').length;
+  const sinInfo=props.filter(p=>!p.desc||!p.imagenes).length;
+
+  // Tab: Propiedades KPIs
+  const setEl=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  setEl('kpi-total',props.length);
+  setEl('kpi-venta',venta);
+  setEl('kpi-arriendo',arriendo);
+  setEl('kpi-consultas',contacts.length);
+  setEl('kpi-activas',activas);
+
+  // General tab panels
+  setEl('d-no-disp', props.filter(p=>p.estado==='inactiva').length);
+  setEl('d-ptes-vis', props.filter(p=>p.estado==='activa').length);
+  setEl('d-mod-precio','–');
+  setEl('d-clientes-nov', contacts.length);
+  setEl('d-props-sin-info', sinInfo);
+  setEl('d-activas-count', activas);
+  setEl('d-vis-pendientes', '–');
+  setEl('d-vis-confirmadas', '–');
+  setEl('d-contactos-total', contacts.length);
+  setEl('d-rep-venta', venta);
+  setEl('d-rep-arriendo', arriendo);
+
+  // Bar chart proportions
+  const total=venta+arriendo||1;
+  const bv=document.getElementById('d-bar-venta');
+  const ba=document.getElementById('d-bar-arriendo');
+  if(bv) bv.style.width=Math.round(venta/total*100)+'%';
+  if(ba) ba.style.width=Math.round(arriendo/total*100)+'%';
+
+  // Admin header date + UF
+  const now=new Date();
+  const days=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const months=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  setEl('admin-date-display',`${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]} de ${now.getFullYear()}`);
+  fetch('https://mindicador.cl/api/uf').then(r=>r.json()).then(d=>{
+    const v=d.serie?.[0]?.valor;
+    if(v) setEl('admin-uf-info'.replace('info','display'),'UF '+ v.toLocaleString('es-CL',{minimumFractionDigits:2}));
+  }).catch(()=>setEl('admin-uf-display','UF —'));
+
+  // Tables
   renderDashRecent(props.slice(0,6));
-  // Recent contacts
   renderDashContacts(contacts.slice(0,5));
+
+  // Init charts if not done
+  if(!window._adminChartsInit) initAdminCharts();
+}
+
+function initAdminCharts(){
+  window._adminChartsInit=true;
+  const randData=()=>Array.from({length:12},()=>Math.floor(Math.random()*30)+5);
+  const lineOpts=(color)=>({type:'line',options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}},elements:{point:{radius:0},line:{tension:.4,borderWidth:2}}},data:{labels:['E','F','M','A','M','J','J','A','S','O','N','D'],datasets:[{data:randData(),borderColor:color,backgroundColor:color+'33',fill:true}]}});
+  ['chartCaptaciones2','chartContactos2','chartVisitas2'].forEach((id,i)=>{
+    const el=document.getElementById(id); if(!el) return;
+    new Chart(el, lineOpts(['#43a047','#1565c0','#7b1fa2'][i]||'#43a047'));
+  });
+  const el2=document.getElementById('chartCartera2');
+  if(el2) new Chart(el2,{type:'doughnut',data:{labels:['Casa','Depto','Oficina','Local','Terreno'],datasets:[{data:[28,42,12,8,10],backgroundColor:['#c87941','#3d5a8a','#7c5cbf','#2e7d32','#e53935'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'60%'}});
 }
 
 function renderDashRecent(props){
