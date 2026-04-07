@@ -1660,9 +1660,15 @@ function mapSupaProp(r) {
     : direccion.toLowerCase().includes('vallenar') ? 'Vallenar'
     : direccion.toLowerCase().includes('colina') ? 'Colina'
     : 'Copiapó';
+  // Extract codigo and subtipo from notas field
+  const notasStr = r.notas || '';
+  const codigoMatch = notasStr.match(/Código:\s*(\d+)/i);
+  const subtipoMatch = notasStr.match(/Subtipo:\s*([^|]+)/i);
+  const codigoNum = codigoMatch ? codigoMatch[1] : r.id;
+  const subtipo = subtipoMatch ? subtipoMatch[1].trim() : '';
   return {
     id: r.id,
-    codigo: `COD-${r.codigo || r.id}`,
+    codigo: `COD-${codigoNum}`,
     titulo: `${r.tipo} en ${ciudad}`,
     tipo: r.tipo || 'Casa',
     operacion,
@@ -1677,8 +1683,8 @@ function mapSupaProp(r) {
     estac: 0,
     m2util: r.m2 || 0,
     m2total: r.m2 || 0,
-    desc: r.notas || '',
-    tags: r.subtipo || '',
+    desc: notasStr,
+    tags: subtipo,
     imagenes: '',
     estado: 'activa',
     destacada: precio > 0 && precio < 200,
@@ -1700,7 +1706,7 @@ async function loadPropsFromSupabase() {
     const pageSize = 100;
     while (true) {
       const resp = await fetch(
-        `${SUPA_URL2}/rest/v1/propiedades?select=*&order=codigo.desc&limit=${pageSize}&offset=${from}`,
+        `${SUPA_URL2}/rest/v1/propiedades?select=*&order=id.asc&limit=${pageSize}&offset=${from}`,
         { headers: { 'apikey': SUPA_KEY2, 'Authorization': `Bearer ${SUPA_KEY2}` } }
       );
       const rows = await resp.json();
