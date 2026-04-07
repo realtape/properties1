@@ -1687,8 +1687,8 @@ function mapSupaProp(r) {
   };
 }
 
-function getProps(){ return _websiteProps; }
-function saveProps(data){ _websiteProps = data; }
+function getProps(){ return window._websiteProps || _websiteProps || []; }
+function saveProps(data){ _websiteProps = data; window._websiteProps = data; }
 function getContacts(){ return _websiteContacts; }
 function saveContacts(data){ _websiteContacts = data; }
 
@@ -1709,11 +1709,16 @@ async function loadPropsFromSupabase() {
       if (rows.length < pageSize) break;
       from += pageSize;
     }
-    _websiteProps = allRows.map(mapSupaProp);
+    const mapped = allRows.map(mapSupaProp);
+    _websiteProps = mapped;
+    window._websiteProps = mapped; // also expose globally for debugging
     _websiteLoaded = true;
+    window._websiteLoaded = true;
+    console.log('Supabase props loaded:', mapped.length);
   } catch(e) {
     console.error('Supabase load error:', e);
-    _websiteLoaded = true; // fallback to empty
+    _websiteLoaded = true;
+    window._websiteLoaded = true;
   }
 }
 
@@ -2564,11 +2569,16 @@ function showToast(msg,type='info'){
 //  INIT — load from Supabase then render
 // ═══════════════════════════════════════════════
 (async () => {
-  // Show loading state in prop grid
-  const grid = document.getElementById('prop-grid');
-  if (grid) grid.innerHTML = '<div style="text-align:center;padding:40px;color:#888;grid-column:1/-1">Cargando propiedades...</div>';
-  await loadPropsFromSupabase();
-  renderPublicGrid();
+  try {
+    // Show loading state in prop grid
+    const grid = document.getElementById('prop-grid');
+    if (grid) grid.innerHTML = '<div style="text-align:center;padding:40px;color:#888;grid-column:1/-1">Cargando propiedades...</div>';
+    await loadPropsFromSupabase();
+    renderPublicGrid();
+  } catch(e) {
+    console.error('Init error:', e);
+    renderPublicGrid(); // show whatever we have
+  }
 })();
 
 
